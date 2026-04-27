@@ -27,6 +27,18 @@
         .participant-row { background-color: #1c2128; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
         .badge.bg-format { background-color: #1c2128 !important; border: 1px solid #30363d; color: #c084fc; }
         label.form-label { color: #8b949e; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .mtg-pip { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 2px; border: 1px solid rgba(255,255,255,0.2); vertical-align: middle; }
+        .mtg-pip-White     { background-color: #f0e6c8; border-color: #999; }
+        .mtg-pip-Blue      { background-color: #1e90ff; }
+        .mtg-pip-Black     { background-color: #555; }
+        .mtg-pip-Red       { background-color: #e03c31; }
+        .mtg-pip-Green     { background-color: #2d9e3a; }
+        .mtg-pip-Colorless { background-color: transparent; border: 2px solid #666; }
+        .color-checkbox-label { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 12px; border: 1px solid #30363d; border-radius: 6px; transition: border-color 0.15s; user-select: none; }
+        .color-checkbox-label:hover { border-color: #7c3aed; }
+        .color-checkbox-label .mtg-pip { width: 16px; height: 16px; margin-right: 0; }
+        .color-cb-input { display: none; }
+        .color-cb-input:checked + .color-checkbox-label { border-color: #7c3aed; background-color: rgba(124,58,237,0.15); }
     </style>
     {% block stylesheets %}{% endblock %}
 </head>

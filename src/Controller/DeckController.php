@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Deck;
 use App\Form\DeckType;
+use App\Repository\ColorIdentityRepository;
 use App\Repository\DeckRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,13 +22,14 @@ class DeckController extends AbstractController
     }
 
     #[Route('/new', name: 'deck_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, ColorIdentityRepository $ciRepo): Response
     {
         $deck = new Deck();
         $form = $this->createForm(DeckType::class, $deck);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $deck->setColorIdentity($ciRepo->findByColorNames($form->get('colors')->getData() ?? []));
             $em->persist($deck);
             $em->flush();
             $this->addFlash('success', 'Deck created!');
@@ -44,12 +46,19 @@ class DeckController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'deck_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Deck $deck, EntityManagerInterface $em): Response
+    public function edit(Request $request, Deck $deck, EntityManagerInterface $em, ColorIdentityRepository $ciRepo): Response
     {
         $form = $this->createForm(DeckType::class, $deck);
+
+        if ($deck->getColorIdentity()) {
+            $existing = $deck->getColorIdentity()->getColors()->map(fn($c) => $c->getName())->toArray();
+            $form->get('colors')->setData($existing);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $deck->setColorIdentity($ciRepo->findByColorNames($form->get('colors')->getData() ?? []));
             $em->flush();
             $this->addFlash('success', 'Deck updated!');
             return $this->redirectToRoute('deck_show', ['id' => $deck->getId()]);

@@ -7,6 +7,16 @@
         <h1 class="h3 mb-1">{{ deck.name }}</h1>
         <div class="text-muted">
             <span class="badge bg-format me-2">{{ deck.format }}</span>
+            {% if deck.colorIdentity %}
+                {% if deck.colorIdentity.colors is empty %}
+                    <span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>
+                {% else %}
+                    {% for color in deck.colorIdentity.colors %}
+                        <span class="mtg-pip mtg-pip-{{ color.name }}" title="{{ color.name }}"></span>
+                    {% endfor %}
+                {% endif %}
+                <span class="me-2">{{ deck.colorIdentity.name }}</span>
+            {% endif %}
             Owned by <a href="{{ path('player_show', {id: deck.player.id}) }}">{{ deck.player.username }}</a>
         </div>
     </div>

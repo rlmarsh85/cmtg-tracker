@@ -23,6 +23,14 @@ class DeckType extends AbstractType
                 'choices' => array_combine(Deck::FORMATS, Deck::FORMATS),
                 'attr' => ['class' => 'form-select'],
             ])
+            ->add('colors', ChoiceType::class, [
+                'label' => 'Colors',
+                'choices' => ['White' => 'White', 'Blue' => 'Blue', 'Black' => 'Black', 'Red' => 'Red', 'Green' => 'Green'],
+                'expanded' => true,
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false,
+            ])
             ->add('commander', TextType::class, [
                 'label' => 'Commander / General',
                 'required' => false,

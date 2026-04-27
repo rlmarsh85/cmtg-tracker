@@ -42,6 +42,10 @@ class Deck
     #[Assert\NotNull]
     private ?Player $player = null;
 
+    #[ORM\ManyToOne(targetEntity: ColorIdentity::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?ColorIdentity $colorIdentity = null;
+
     #[ORM\OneToMany(targetEntity: GamePlayer::class, mappedBy: 'deck')]
     private Collection $gamePlayers;
 
@@ -69,6 +73,9 @@ class Deck
 
     public function getPlayer(): ?Player { return $this->player; }
     public function setPlayer(?Player $player): static { $this->player = $player; return $this; }
+
+    public function getColorIdentity(): ?ColorIdentity { return $this->colorIdentity; }
+    public function setColorIdentity(?ColorIdentity $colorIdentity): static { $this->colorIdentity = $colorIdentity; return $this; }
 
     public function getGamePlayers(): Collection { return $this->gamePlayers; }
 
