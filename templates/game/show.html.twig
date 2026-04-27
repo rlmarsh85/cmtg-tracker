@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+{% block title %}Game {{ game.playedAt|date('M j, Y') }} — MTG Tracker{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            <span class="badge bg-format me-2">{{ game.format }}</span>
+            Game on {{ game.playedAt|date('F j, Y') }}
+        </h1>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('game_edit', {id: game.id}) }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        <form action="{{ path('game_delete', {id: game.id}) }}" method="post" onsubmit="return confirm('Delete this game?')">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ game.id) }}">
+            <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash me-1"></i>Delete</button>
+        </form>
+    </div>
+</div>
+
+{% if game.notes %}
+<div class="card mb-4">
+    <div class="card-body"><small class="text-muted d-block mb-1">Notes</small>{{ game.notes }}</div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-people me-2"></i>Participants</div>
+    {% if game.participants is empty %}
+    <div class="card-body text-muted text-center py-4">No participants recorded.</div>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr><th>Player</th><th>Deck</th><th>Placement</th><th>Result</th></tr>
+            </thead>
+            <tbody>
+                {% for gp in game.participants %}
+                <tr {% if gp.winner %}style="background-color:rgba(251,191,36,0.07)"{% endif %}>
+                    <td>
+                        <a href="{{ path('player_show', {id: gp.player.id}) }}">{{ gp.player.username }}</a>
+                    </td>
+                    <td>
+                        {% if gp.deck %}
+                        <a href="{{ path('deck_show', {id: gp.deck.id}) }}">{{ gp.deck.name }}</a>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ gp.placement ?? '—' }}</td>
+                    <td>
+                        {% if gp.winner %}
+                        <span style="color:#fbbf24"><i class="bi bi-trophy-fill me-1"></i>Winner</span>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

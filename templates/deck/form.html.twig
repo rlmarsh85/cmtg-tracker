@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ title }} — MTG Tracker{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ path('deck_index') }}" class="btn btn-sm btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+        <div class="card">
+            <div class="card-body p-4">
+                {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_label(form.player) }}
+                    {{ form_widget(form.player) }}
+                    {{ form_errors(form.player) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name) }}
+                    {{ form_errors(form.name) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.format) }}
+                    {{ form_widget(form.format) }}
+                    {{ form_errors(form.format) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.commander) }}
+                    {{ form_widget(form.commander) }}
+                    {{ form_errors(form.commander) }}
+                    <div class="form-text text-muted">Only required for Commander/EDH format.</div>
+                </div>
+                <div class="mb-4">
+                    {{ form_label(form.notes) }}
+                    {{ form_widget(form.notes) }}
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-mtg flex-fill">
+                        <i class="bi bi-check-lg me-2"></i>Save Deck
+                    </button>
+                    <a href="{{ path('deck_index') }}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

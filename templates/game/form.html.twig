@@ -1,0 +1,229 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ title }} — MTG Tracker{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ path('game_index') }}" class="btn btn-sm btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+
+        {{ form_start(form) }}
+
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-calendar me-2"></i>Game Details</div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form_label(form.playedAt) }}
+                        {{ form_widget(form.playedAt) }}
+                        {{ form_errors(form.playedAt) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(form.format) }}
+                        {{ form_widget(form.format) }}
+                        {{ form_errors(form.format) }}
+                    </div>
+                    <div class="col-12">
+                        {{ form_label(form.notes) }}
+                        {{ form_widget(form.notes) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-people me-2"></i>Participants</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="addParticipant">
+                    <i class="bi bi-plus-lg me-1"></i>Add Player
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="participantsContainer">
+                    {% if game and game.participants is not empty %}
+                        {% for i, gp in game.participants %}
+                        <div class="participant-row">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Player</label>
+                                    <select name="participants[{{ i }}][player_id]" class="form-select player-select" required>
+                                        <option value="">Select player…</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}" {{ gp.player.id == player.id ? 'selected' }}>{{ player.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Deck (optional)</label>
+                                    <select name="participants[{{ i }}][deck_id]" class="form-select deck-select">
+                                        <option value="">No deck</option>
+                                        {% for deck in decks %}
+                                        <option value="{{ deck.id }}" {{ gp.deck and gp.deck.id == deck.id ? 'selected' }}>
+                                            {{ deck.player.username }} — {{ deck.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Place</label>
+                                    <input type="number" name="participants[{{ i }}][placement]" class="form-control"
+                                           min="1" max="20" placeholder="—" value="{{ gp.placement ?? '' }}">
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
+                                    <input type="checkbox" name="participants[{{ i }}][winner]" value="1" class="form-check-input"
+                                           {{ gp.winner ? 'checked' }}>
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-participant mt-3">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Start with 2 empty rows -->
+                        <div class="participant-row" data-index="0">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Player</label>
+                                    <select name="participants[0][player_id]" class="form-select player-select">
+                                        <option value="">Select player…</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">{{ player.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Deck (optional)</label>
+                                    <select name="participants[0][deck_id]" class="form-select deck-select">
+                                        <option value="">No deck</option>
+                                        {% for deck in decks %}
+                                        <option value="{{ deck.id }}">{{ deck.player.username }} — {{ deck.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Place</label>
+                                    <input type="number" name="participants[0][placement]" class="form-control" min="1" max="20" placeholder="—">
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
+                                    <input type="checkbox" name="participants[0][winner]" value="1" class="form-check-input">
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-participant mt-3"><i class="bi bi-x"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="participant-row" data-index="1">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Player</label>
+                                    <select name="participants[1][player_id]" class="form-select player-select">
+                                        <option value="">Select player…</option>
+                                        {% for player in players %}
+                                        <option value="{{ player.id }}">{{ player.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Deck (optional)</label>
+                                    <select name="participants[1][deck_id]" class="form-select deck-select">
+                                        <option value="">No deck</option>
+                                        {% for deck in decks %}
+                                        <option value="{{ deck.id }}">{{ deck.player.username }} — {{ deck.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Place</label>
+                                    <input type="number" name="participants[1][placement]" class="form-control" min="1" max="20" placeholder="—">
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
+                                    <input type="checkbox" name="participants[1][winner]" value="1" class="form-check-input">
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-participant mt-3"><i class="bi bi-x"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <p class="text-muted small mt-2 mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Check the <i class="bi bi-trophy-fill" style="color:#fbbf24"></i> for the winner. Place is optional (1 = 1st).
+                </p>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-mtg flex-fill">
+                <i class="bi bi-check-lg me-2"></i>Save Game
+            </button>
+            <a href="{{ path('game_index') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const allDecks = {{ decks|map(d => {id: d.id, name: d.name, owner: d.player.username})|json_encode|raw }};
+const allPlayers = {{ players|map(p => {id: p.id, username: p.username})|json_encode|raw }};
+
+let nextIndex = document.querySelectorAll('.participant-row').length;
+
+document.getElementById('addParticipant').addEventListener('click', () => {
+    const i = nextIndex++;
+    const div = document.createElement('div');
+    div.className = 'participant-row';
+    div.dataset.index = i;
+
+    const playerOptions = allPlayers.map(p =>
+        `<option value="${p.id}">${p.username}</option>`).join('');
+    const deckOptions = '<option value="">No deck</option>' +
+        allDecks.map(d => `<option value="${d.id}">${d.owner} — ${d.name}</option>`).join('');
+
+    div.innerHTML = `
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Player</label>
+                <select name="participants[${i}][player_id]" class="form-select">${playerOptions}</select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Deck (optional)</label>
+                <select name="participants[${i}][deck_id]" class="form-select">${deckOptions}</select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Place</label>
+                <input type="number" name="participants[${i}][placement]" class="form-control" min="1" max="20" placeholder="—">
+            </div>
+            <div class="col-md-1 text-center">
+                <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
+                <input type="checkbox" name="participants[${i}][winner]" value="1" class="form-check-input">
+            </div>
+            <div class="col-md-1 text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-participant mt-3"><i class="bi bi-x"></i></button>
+            </div>
+        </div>`;
+
+    document.getElementById('participantsContainer').appendChild(div);
+});
+
+document.getElementById('participantsContainer').addEventListener('click', e => {
+    if (e.target.closest('.remove-participant')) {
+        e.target.closest('.participant-row').remove();
+    }
+});
+</script>
+{% endblock %}

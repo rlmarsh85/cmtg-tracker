@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+{% block title %}Games — MTG Tracker{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-controller me-2"></i>Games</h1>
+    <a href="{{ path('game_new') }}" class="btn btn-mtg"><i class="bi bi-plus-lg me-2"></i>Record Game</a>
+</div>
+
+{% if games is empty %}
+<div class="card">
+    <div class="card-body text-center text-muted py-5">
+        <i class="bi bi-controller display-4 d-block mb-3"></i>
+        No games yet. <a href="{{ path('game_new') }}">Record your first game!</a>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Format</th>
+                    <th>Players</th>
+                    <th>Winner</th>
+                    <th>Notes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                <tr>
+                    <td>{{ game.playedAt|date('M j, Y') }}</td>
+                    <td><span class="badge bg-format">{{ game.format }}</span></td>
+                    <td>
+                        {% for gp in game.participants %}
+                            {{ gp.player.username }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% set winner = game.winner %}
+                        {% if winner %}
+                        <span style="color:#fbbf24"><i class="bi bi-trophy-fill me-1"></i>{{ winner.player.username }}</span>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if game.notes %}
+                        <span class="text-muted" title="{{ game.notes }}">
+                            {{ game.notes|length > 40 ? game.notes|slice(0,40) ~ '…' : game.notes }}
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{{ path('game_show', {id: game.id}) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                            <a href="{{ path('game_edit', {id: game.id}) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

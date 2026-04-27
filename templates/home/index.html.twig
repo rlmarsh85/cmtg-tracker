@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+{% block title %}MTG Tracker — Dashboard{% endblock %}
+
+{% block body %}
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center py-4">
+                <div class="display-4 fw-bold text-purple" style="color:#c084fc">{{ gameCount }}</div>
+                <div class="text-muted mt-1"><i class="bi bi-controller me-1"></i>Games Played</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center py-4">
+                <div class="display-4 fw-bold" style="color:#34d399">{{ playerCount }}</div>
+                <div class="text-muted mt-1"><i class="bi bi-people me-1"></i>Players</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100" style="border-left: 3px solid #7c3aed;">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center py-4 gap-3">
+                <a href="{{ path('game_new') }}" class="btn btn-mtg w-100">
+                    <i class="bi bi-plus-lg me-2"></i>Record Game
+                </a>
+                <a href="{{ path('player_new') }}" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-person-plus me-2"></i>Add Player
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Games</h5>
+        <a href="{{ path('game_index') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+    </div>
+    {% if recentGames is empty %}
+    <div class="card-body text-center text-muted py-5">
+        <i class="bi bi-controller display-4 d-block mb-3"></i>
+        No games recorded yet. <a href="{{ path('game_new') }}">Record your first game!</a>
+    </div>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Format</th>
+                    <th>Players</th>
+                    <th>Winner</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in recentGames %}
+                <tr>
+                    <td>{{ game.playedAt|date('M j, Y') }}</td>
+                    <td><span class="badge bg-format">{{ game.format }}</span></td>
+                    <td>{{ game.participants|length }}</td>
+                    <td>
+                        {% set winner = game.winner %}
+                        {% if winner %}
+                            <i class="bi bi-trophy-fill me-1" style="color:#fbbf24"></i>{{ winner.player.username }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{{ path('game_show', {id: game.id}) }}" class="btn btn-sm btn-outline-secondary">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
