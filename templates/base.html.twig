@@ -117,24 +117,18 @@
         float.style.top  = top  + 'px';
     }
 
-    document.addEventListener('mouseover', function (e) {
-        const el = e.target.closest('[data-card-preview]');
-        if (!el) return;
-        float.src = el.dataset.cardPreview;
-        float.style.display = 'block';
-        position(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('mousemove', function (e) {
-        if (float.style.display !== 'none') position(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('mouseout', function (e) {
-        const el = e.target.closest('[data-card-preview]');
-        if (!el) return;
-        if (!e.relatedTarget || !e.relatedTarget.closest('[data-card-preview]')) {
+    document.querySelectorAll('[data-card-preview]').forEach(function (el) {
+        el.addEventListener('mouseenter', function (e) {
+            float.src = el.dataset.cardPreview;
+            float.style.display = 'block';
+            position(e.clientX, e.clientY);
+        });
+        el.addEventListener('mousemove', function (e) {
+            position(e.clientX, e.clientY);
+        });
+        el.addEventListener('mouseleave', function () {
             float.style.display = 'none';
-        }
+        });
     });
 }());
 </script>
