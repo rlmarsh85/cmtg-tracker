@@ -34,12 +34,36 @@
 {% if deck.commander %}
 <div class="card mb-4">
     <div class="card-body">
-        <small class="text-muted d-block">Commander / General</small>
-        <strong>{{ deck.commander }}</strong>
-        {% if deck.partner %}
-            <span class="text-muted mx-2">&amp;</span>
-            <strong>{{ deck.partner }}</strong>
-        {% endif %}
+        <small class="text-muted d-block mb-1">Commander / General</small>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div>
+                {% if deck.commander.colorIdentity %}
+                    {% if deck.commander.colorIdentity.colors is empty %}
+                        <span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>
+                    {% else %}
+                        {% for color in deck.commander.colorIdentity.colors %}
+                            <span class="mtg-pip mtg-pip-{{ color.name }}" title="{{ color.name }}"></span>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+                <strong class="ms-1">{{ deck.commander.name }}</strong>
+            </div>
+            {% if deck.partner %}
+                <span class="text-muted">&amp;</span>
+                <div>
+                    {% if deck.partner.colorIdentity %}
+                        {% if deck.partner.colorIdentity.colors is empty %}
+                            <span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>
+                        {% else %}
+                            {% for color in deck.partner.colorIdentity.colors %}
+                                <span class="mtg-pip mtg-pip-{{ color.name }}" title="{{ color.name }}"></span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                    <strong class="ms-1">{{ deck.partner.name }}</strong>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endif %}

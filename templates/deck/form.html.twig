@@ -134,6 +134,12 @@
         partner_with:      'This commander has a fixed partner — auto-filled above.',
     };
 
+    // ── Hidden metadata fields (populated when autocomplete fires) ────────
+    const cmdColorsInput      = document.getElementById('{{ form.commander_colors.vars.id }}');
+    const cmdPartnerTypeInput = document.getElementById('{{ form.commander_partner_type.vars.id }}');
+    const cmdPartnerWithInput = document.getElementById('{{ form.commander_partner_with.vars.id }}');
+    const partnerColorsInput  = document.getElementById('{{ form.partner_colors.vars.id }}');
+
     // ── Color state ────────────────────────────────────────────────────────
     let commanderColors = [];
     let partnerColors   = [];
@@ -259,6 +265,7 @@
         partnerInput.readOnly = false;
         partnerInput.classList.remove('partner-fixed');
         partnerColors = [];
+        if (partnerColorsInput) partnerColorsInput.value = '';
     }
 
     makeAutocomplete(
@@ -267,6 +274,7 @@
         q => '/api/commanders/partners?q=' + encodeURIComponent(q) + '&type=' + (currentPartnerType || 'partner'),
         card => {
             partnerColors = card.color_identity || [];
+            if (partnerColorsInput) partnerColorsInput.value = partnerColors.join(',');
             applyColors();
         }
     );
@@ -284,6 +292,11 @@
             partnerColors   = [];
             applyColors();
 
+            if (cmdColorsInput)      cmdColorsInput.value      = commanderColors.join(',');
+            if (cmdPartnerTypeInput) cmdPartnerTypeInput.value = card.partner_type || '';
+            if (cmdPartnerWithInput) cmdPartnerWithInput.value = card.partner_with || '';
+            if (partnerColorsInput)  partnerColorsInput.value  = '';
+
             if (card.partner_type) {
                 showPartner(card.partner_type);
                 if (card.partner_type === 'partner_with' && card.partner_with) {
@@ -291,7 +304,13 @@
                     // Fetch the fixed partner's colors and merge them in
                     fetch('/api/commanders/info?name=' + encodeURIComponent(card.partner_with))
                         .then(r => r.ok ? r.json() : null)
-                        .then(info => { if (info) { partnerColors = info.color_identity || []; applyColors(); } })
+                        .then(info => {
+                            if (info) {
+                                partnerColors = info.color_identity || [];
+                                if (partnerColorsInput) partnerColorsInput.value = partnerColors.join(',');
+                                applyColors();
+                            }
+                        })
                         .catch(() => {});
                 } else {
                     partnerInput.value = '';
@@ -313,6 +332,9 @@
             cmdInput.value = '';
             cmdDropdown.style.display = 'none';
             commanderColors = [];
+            if (cmdColorsInput)      cmdColorsInput.value      = '';
+            if (cmdPartnerTypeInput) cmdPartnerTypeInput.value = '';
+            if (cmdPartnerWithInput) cmdPartnerWithInput.value = '';
             hidePartner();
         }
     }
@@ -320,15 +342,33 @@
     fmtSelect.addEventListener('change', toggleFormat);
     toggleFormat();
 
-    // ── Edit: restore partner section for existing commander ───────────────
+    // ── Edit: restore partner section and populate hidden fields ──────────
     const savedCommander = cmdInput.value.trim();
     if (savedCommander) {
         fetch('/api/commanders/info?name=' + encodeURIComponent(savedCommander))
             .then(r => r.ok ? r.json() : null)
             .then(card => {
-                if (card && card.partner_type) {
+                if (!card) return;
+                commanderColors = card.color_identity || [];
+                if (cmdColorsInput)      cmdColorsInput.value      = commanderColors.join(',');
+                if (cmdPartnerTypeInput) cmdPartnerTypeInput.value = card.partner_type || '';
+                if (cmdPartnerWithInput) cmdPartnerWithInput.value = card.partner_with || '';
+
+                if (card.partner_type) {
                     showPartner(card.partner_type);
-                    // partner input already has its saved value from the form; leave colors alone
+                    // Restore partner's color info from saved partner value
+                    const savedPartner = partnerInput.value.trim();
+                    if (savedPartner) {
+                        fetch('/api/commanders/info?name=' + encodeURIComponent(savedPartner))
+                            .then(r => r.ok ? r.json() : null)
+                            .then(info => {
+                                if (info) {
+                                    partnerColors = info.color_identity || [];
+                                    if (partnerColorsInput) partnerColorsInput.value = partnerColors.join(',');
+                                }
+                            })
+                            .catch(() => {});
+                    }
                 }
             })
             .catch(() => {});

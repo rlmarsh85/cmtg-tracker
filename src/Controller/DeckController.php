@@ -6,6 +6,7 @@ use App\Entity\Deck;
 use App\Form\DeckType;
 use App\Repository\ColorIdentityRepository;
 use App\Repository\DeckRepository;
+use App\Service\CommanderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,7 @@ class DeckController extends AbstractController
     }
 
     #[Route('/new', name: 'deck_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, ColorIdentityRepository $ciRepo): Response
+    public function new(Request $request, EntityManagerInterface $em, ColorIdentityRepository $ciRepo, CommanderService $commanderService): Response
     {
         $deck = new Deck();
         $form = $this->createForm(DeckType::class, $deck);
@@ -30,10 +31,7 @@ class DeckController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $deck->setColorIdentity($ciRepo->findByColorNames($form->get('colors')->getData() ?? []));
-            if ($deck->getFormat() !== 'Commander') {
-                $deck->setCommander(null);
-                $deck->setPartner(null);
-            }
+            $this->resolveCommanders($form, $deck, $commanderService);
             $em->persist($deck);
             $em->flush();
             $this->addFlash('success', 'Deck created!');
@@ -50,7 +48,7 @@ class DeckController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'deck_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Deck $deck, EntityManagerInterface $em, ColorIdentityRepository $ciRepo): Response
+    public function edit(Request $request, Deck $deck, EntityManagerInterface $em, ColorIdentityRepository $ciRepo, CommanderService $commanderService): Response
     {
         $form = $this->createForm(DeckType::class, $deck);
 
@@ -58,15 +56,18 @@ class DeckController extends AbstractController
             $existing = $deck->getColorIdentity()->getColors()->map(fn($c) => $c->getName())->toArray();
             $form->get('colors')->setData($existing);
         }
+        if ($deck->getCommander()) {
+            $form->get('commander')->setData($deck->getCommander()->getName());
+        }
+        if ($deck->getPartner()) {
+            $form->get('partner')->setData($deck->getPartner()->getName());
+        }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $deck->setColorIdentity($ciRepo->findByColorNames($form->get('colors')->getData() ?? []));
-            if ($deck->getFormat() !== 'Commander') {
-                $deck->setCommander(null);
-                $deck->setPartner(null);
-            }
+            $this->resolveCommanders($form, $deck, $commanderService);
             $em->flush();
             $this->addFlash('success', 'Deck updated!');
             return $this->redirectToRoute('deck_show', ['id' => $deck->getId()]);
@@ -84,5 +85,41 @@ class DeckController extends AbstractController
             $this->addFlash('success', 'Deck deleted.');
         }
         return $this->redirectToRoute('deck_index');
+    }
+
+    private function resolveCommanders($form, Deck $deck, CommanderService $commanderService): void
+    {
+        if ($deck->getFormat() !== 'Commander') {
+            $deck->setCommander(null);
+            $deck->setPartner(null);
+            return;
+        }
+
+        $commanderName = trim($form->get('commander')->getData() ?? '');
+        if ($commanderName) {
+            $colorLetters = $this->parseLetters($form->get('commander_colors')->getData());
+            $deck->setCommander($commanderService->findOrCreate(
+                $commanderName,
+                $colorLetters,
+                $form->get('commander_partner_type')->getData() ?: null,
+                $form->get('commander_partner_with')->getData() ?: null,
+            ));
+        } else {
+            $deck->setCommander(null);
+        }
+
+        $partnerName = trim($form->get('partner')->getData() ?? '');
+        if ($partnerName) {
+            $partnerColorLetters = $this->parseLetters($form->get('partner_colors')->getData());
+            $deck->setPartner($commanderService->findOrCreate($partnerName, $partnerColorLetters));
+        } else {
+            $deck->setPartner(null);
+        }
+    }
+
+    private function parseLetters(?string $csv): array
+    {
+        if (!$csv) return [];
+        return array_values(array_filter(array_map('trim', explode(',', $csv))));
     }
 }

@@ -49,8 +49,12 @@
                         {% endif %}
                     </td>
                     <td>
-                        {{ deck.commander ?? '—' }}
-                        {% if deck.partner %}<small class="text-muted"> &amp; {{ deck.partner }}</small>{% endif %}
+                        {% if deck.commander %}
+                            {{ deck.commander.name }}
+                            {% if deck.partner %}<small class="text-muted"> &amp; {{ deck.partner.name }}</small>{% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{{ path('player_show', {id: deck.player.id}) }}">{{ deck.player.username }}</a>

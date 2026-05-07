@@ -23,11 +23,13 @@ class Deck
     #[Assert\Length(max: 150)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 150, nullable: true)]
-    private ?string $commander = null;
+    #[ORM\ManyToOne(targetEntity: Commander::class, inversedBy: 'decksAsCommander')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Commander $commander = null;
 
-    #[ORM\Column(length: 150, nullable: true)]
-    private ?string $partner = null;
+    #[ORM\ManyToOne(targetEntity: Commander::class, inversedBy: 'decksAsPartner')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Commander $partner = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
@@ -63,11 +65,11 @@ class Deck
     public function getName(): ?string { return $this->name; }
     public function setName(string $name): static { $this->name = $name; return $this; }
 
-    public function getCommander(): ?string { return $this->commander; }
-    public function setCommander(?string $commander): static { $this->commander = $commander; return $this; }
+    public function getCommander(): ?Commander { return $this->commander; }
+    public function setCommander(?Commander $commander): static { $this->commander = $commander; return $this; }
 
-    public function getPartner(): ?string { return $this->partner; }
-    public function setPartner(?string $partner): static { $this->partner = $partner; return $this; }
+    public function getPartner(): ?Commander { return $this->partner; }
+    public function setPartner(?Commander $partner): static { $this->partner = $partner; return $this; }
 
     public function getFormat(): string { return $this->format; }
     public function setFormat(string $format): static { $this->format = $format; return $this; }

@@ -7,6 +7,7 @@ use App\Entity\Player;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,13 +35,19 @@ class DeckType extends AbstractType
             ->add('commander', TextType::class, [
                 'label'    => 'Commander / General',
                 'required' => false,
+                'mapped'   => false,
                 'attr'     => ['class' => 'form-control'],
             ])
+            ->add('commander_colors', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('commander_partner_type', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('commander_partner_with', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('partner', TextType::class, [
                 'label'    => 'Partner',
                 'required' => false,
+                'mapped'   => false,
                 'attr'     => ['class' => 'form-control'],
             ])
+            ->add('partner_colors', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('notes', TextareaType::class, [
                 'label' => 'Notes',
                 'required' => false,
