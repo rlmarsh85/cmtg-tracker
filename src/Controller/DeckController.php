@@ -32,6 +32,7 @@ class DeckController extends AbstractController
             $deck->setColorIdentity($ciRepo->findByColorNames($form->get('colors')->getData() ?? []));
             if ($deck->getFormat() !== 'Commander') {
                 $deck->setCommander(null);
+                $deck->setPartner(null);
             }
             $em->persist($deck);
             $em->flush();
@@ -64,6 +65,7 @@ class DeckController extends AbstractController
             $deck->setColorIdentity($ciRepo->findByColorNames($form->get('colors')->getData() ?? []));
             if ($deck->getFormat() !== 'Commander') {
                 $deck->setCommander(null);
+                $deck->setPartner(null);
             }
             $em->flush();
             $this->addFlash('success', 'Deck updated!');

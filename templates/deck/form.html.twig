@@ -33,6 +33,7 @@
     .autocomplete-item.ac-active { background: #1c2128; }
     .autocomplete-pips { display: flex; gap: 3px; flex-shrink: 0; }
     .ac-loading { padding: 10px 12px; color: #8b949e; font-size: 0.85rem; }
+    .partner-fixed { background-color: #1c2128 !important; color: #8b949e !important; cursor: default; }
 </style>
 {% endblock %}
 
@@ -86,6 +87,15 @@
                     {{ form_errors(form.commander) }}
                     <div class="form-text text-muted">Only required for Commander/EDH format. Selecting a suggestion auto-fills colors.</div>
                 </div>
+                <div class="mb-3" id="partner-section" style="display:none">
+                    <label class="form-label" id="partner-section-label">Partner</label>
+                    <div class="commander-wrapper">
+                        {{ form_widget(form.partner, {'attr': {'class': 'form-control', 'autocomplete': 'off'}}) }}
+                        <div id="partner-dropdown" class="autocomplete-dropdown"></div>
+                    </div>
+                    {{ form_errors(form.partner) }}
+                    <div id="partner-hint" class="form-text text-muted"></div>
+                </div>
                 <div class="mb-4">
                     {{ form_label(form.notes) }}
                     {{ form_widget(form.notes) }}
@@ -106,145 +116,223 @@
 {% block scripts %}
 <script>
 (function () {
-    const input    = document.getElementById('{{ form.commander.vars.id }}');
-    const dropdown = document.getElementById('commander-dropdown');
-    if (!input || !dropdown) return;
-
     const COLOR_MAP = { W: 'White', U: 'Blue', B: 'Black', R: 'Red', G: 'Green' };
-    const DEBOUNCE_MS = 350;
-    let timer = null;
 
-    // ── color checkboxes ───────────────────────────────────────────
-    function setColors(colorIdentity) {
+    const PARTNER_LABELS = {
+        partner:           'Partner Commander',
+        friends_forever:   'Friends Forever Partner',
+        choose_background: 'Background',
+        doctors_companion: "Doctor's Companion",
+        partner_with:      'Partner',
+    };
+
+    const PARTNER_HINTS = {
+        partner:           'This commander can partner with any other commander that also has Partner.',
+        friends_forever:   'This commander can partner with any Friends Forever commander.',
+        choose_background: 'Choose a Background enchantment to pair with this commander.',
+        doctors_companion: "Pair with a commander that has Doctor's Companion.",
+        partner_with:      'This commander has a fixed partner — auto-filled above.',
+    };
+
+    // ── Color state ────────────────────────────────────────────────────────
+    let commanderColors = [];
+    let partnerColors   = [];
+
+    function applyColors() {
+        const combined = [...new Set([...commanderColors, ...partnerColors])];
         document.querySelectorAll('input.color-cb-input').forEach(cb => cb.checked = false);
-        (colorIdentity || []).forEach(letter => {
-            const name = COLOR_MAP[letter];
-            if (name) {
-                const cb = document.querySelector('input.color-cb-input[value="' + name + '"]');
-                if (cb) cb.checked = true;
-            }
+        combined.forEach(l => {
+            const name = COLOR_MAP[l];
+            if (!name) return;
+            const cb = document.querySelector('input.color-cb-input[value="' + name + '"]');
+            if (cb) cb.checked = true;
         });
     }
 
-    // ── pip rendering ──────────────────────────────────────────────
-    function pipsHtml(colorIdentity) {
-        if (!colorIdentity || colorIdentity.length === 0) {
+    // ── Pip renderer ───────────────────────────────────────────────────────
+    function pipsHtml(colors) {
+        if (!colors || !colors.length)
             return '<span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>';
-        }
-        return colorIdentity.map(letter => {
-            const name = COLOR_MAP[letter] || letter;
-            return '<span class="mtg-pip mtg-pip-' + name + '" title="' + name + '"></span>';
+        return colors.map(l => {
+            const n = COLOR_MAP[l] || l;
+            return '<span class="mtg-pip mtg-pip-' + n + '" title="' + n + '"></span>';
         }).join('');
     }
 
-    // ── dropdown ───────────────────────────────────────────────────
-    function closeDropdown() { dropdown.style.display = 'none'; }
+    // ── Autocomplete factory ───────────────────────────────────────────────
+    function makeAutocomplete(inputEl, dropdownEl, getUrl, onSelect) {
+        const DEBOUNCE = 350;
+        let timer = null;
 
-    function renderResults(results) {
-        dropdown.innerHTML = '';
-        if (!results.length) { closeDropdown(); return; }
+        function close() { dropdownEl.style.display = 'none'; }
 
-        results.forEach(card => {
-            const item = document.createElement('div');
-            item.className = 'autocomplete-item';
-            item.innerHTML =
-                '<span class="autocomplete-pips">' + pipsHtml(card.color_identity) + '</span>' +
-                '<span>' + card.name + '</span>';
-
-            item.addEventListener('mousedown', function (e) {
-                e.preventDefault();                 // keep focus on input
-                input.value = card.name;
-                setColors(card.color_identity);
-                closeDropdown();
+        function render(results) {
+            dropdownEl.innerHTML = '';
+            if (!results.length) { close(); return; }
+            results.forEach(card => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML =
+                    '<span class="autocomplete-pips">' + pipsHtml(card.color_identity) + '</span>' +
+                    '<span>' + card.name + '</span>';
+                item.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    inputEl.value = card.name;
+                    close();
+                    onSelect(card);
+                });
+                dropdownEl.appendChild(item);
             });
+            dropdownEl.style.display = 'block';
+        }
 
-            dropdown.appendChild(item);
+        async function doFetch(q) {
+            dropdownEl.innerHTML = '<div class="ac-loading"><i class="bi bi-hourglass-split me-1"></i>Searching…</div>';
+            dropdownEl.style.display = 'block';
+            try {
+                const resp = await fetch(getUrl(q));
+                if (!resp.ok) { close(); return; }
+                render(await resp.json());
+            } catch { close(); }
+        }
+
+        inputEl.addEventListener('input', function () {
+            clearTimeout(timer);
+            const q = this.value.trim();
+            if (q.length < 2) { close(); return; }
+            timer = setTimeout(() => doFetch(q), DEBOUNCE);
         });
 
-        dropdown.style.display = 'block';
-    }
-
-    function showLoading() {
-        dropdown.innerHTML = '<div class="ac-loading"><i class="bi bi-hourglass-split me-1"></i>Searching…</div>';
-        dropdown.style.display = 'block';
-    }
-
-    // ── fetch ──────────────────────────────────────────────────────
-    async function fetchCommanders(q) {
-        showLoading();
-        try {
-            const resp = await fetch('/api/commanders/search?q=' + encodeURIComponent(q));
-            if (!resp.ok) { closeDropdown(); return; }
-            renderResults(await resp.json());
-        } catch {
-            closeDropdown();
-        }
-    }
-
-    // ── keyboard navigation ────────────────────────────────────────
-    input.addEventListener('keydown', function (e) {
-        const items  = dropdown.querySelectorAll('.autocomplete-item');
-        const active = dropdown.querySelector('.autocomplete-item.ac-active');
-
-        if (e.key === 'Escape') { closeDropdown(); return; }
-
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (!active) { items[0]?.classList.add('ac-active'); }
-            else { active.classList.remove('ac-active'); (active.nextElementSibling || items[0]).classList.add('ac-active'); }
-            return;
-        }
-
-        if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (!active) { items[items.length - 1]?.classList.add('ac-active'); }
-            else { active.classList.remove('ac-active'); (active.previousElementSibling || items[items.length - 1]).classList.add('ac-active'); }
-            return;
-        }
-
-        if (e.key === 'Enter') {
-            const highlighted = dropdown.querySelector('.autocomplete-item.ac-active');
-            if (highlighted && dropdown.style.display !== 'none') {
+        inputEl.addEventListener('keydown', function (e) {
+            const items  = dropdownEl.querySelectorAll('.autocomplete-item');
+            const active = dropdownEl.querySelector('.autocomplete-item.ac-active');
+            if (e.key === 'Escape') { close(); return; }
+            if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                highlighted.dispatchEvent(new MouseEvent('mousedown'));
+                if (!active) items[0]?.classList.add('ac-active');
+                else { active.classList.remove('ac-active'); (active.nextElementSibling || items[0]).classList.add('ac-active'); }
+                return;
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (!active) items[items.length - 1]?.classList.add('ac-active');
+                else { active.classList.remove('ac-active'); (active.previousElementSibling || items[items.length - 1]).classList.add('ac-active'); }
+                return;
+            }
+            if (e.key === 'Enter') {
+                const hi = dropdownEl.querySelector('.autocomplete-item.ac-active');
+                if (hi && dropdownEl.style.display !== 'none') {
+                    e.preventDefault();
+                    hi.dispatchEvent(new MouseEvent('mousedown'));
+                }
+            }
+        });
+
+        inputEl.addEventListener('blur',  () => setTimeout(close, 150));
+        document.addEventListener('click', e => {
+            if (!inputEl.contains(e.target) && !dropdownEl.contains(e.target)) close();
+        });
+    }
+
+    // ── Partner section ────────────────────────────────────────────────────
+    const partnerSection  = document.getElementById('partner-section');
+    const partnerLabel    = document.getElementById('partner-section-label');
+    const partnerHint     = document.getElementById('partner-hint');
+    const partnerInput    = document.getElementById('{{ form.partner.vars.id }}');
+    const partnerDropdown = document.getElementById('partner-dropdown');
+    let currentPartnerType = null;
+
+    function showPartner(type) {
+        currentPartnerType = type;
+        partnerSection.style.display = '';
+        partnerLabel.textContent = PARTNER_LABELS[type] || 'Partner';
+        partnerHint.textContent  = PARTNER_HINTS[type]  || '';
+        const isFixed = (type === 'partner_with');
+        partnerInput.readOnly = isFixed;
+        partnerInput.classList.toggle('partner-fixed', isFixed);
+    }
+
+    function hidePartner() {
+        currentPartnerType = null;
+        partnerSection.style.display = 'none';
+        partnerInput.value    = '';
+        partnerInput.readOnly = false;
+        partnerInput.classList.remove('partner-fixed');
+        partnerColors = [];
+    }
+
+    makeAutocomplete(
+        partnerInput,
+        partnerDropdown,
+        q => '/api/commanders/partners?q=' + encodeURIComponent(q) + '&type=' + (currentPartnerType || 'partner'),
+        card => {
+            partnerColors = card.color_identity || [];
+            applyColors();
+        }
+    );
+
+    // ── Commander autocomplete ─────────────────────────────────────────────
+    const cmdInput    = document.getElementById('{{ form.commander.vars.id }}');
+    const cmdDropdown = document.getElementById('commander-dropdown');
+
+    makeAutocomplete(
+        cmdInput,
+        cmdDropdown,
+        q => '/api/commanders/search?q=' + encodeURIComponent(q),
+        card => {
+            commanderColors = card.color_identity || [];
+            partnerColors   = [];
+            applyColors();
+
+            if (card.partner_type) {
+                showPartner(card.partner_type);
+                if (card.partner_type === 'partner_with' && card.partner_with) {
+                    partnerInput.value = card.partner_with;
+                    // Fetch the fixed partner's colors and merge them in
+                    fetch('/api/commanders/info?name=' + encodeURIComponent(card.partner_with))
+                        .then(r => r.ok ? r.json() : null)
+                        .then(info => { if (info) { partnerColors = info.color_identity || []; applyColors(); } })
+                        .catch(() => {});
+                } else {
+                    partnerInput.value = '';
+                }
+            } else {
+                hidePartner();
             }
         }
-    });
+    );
 
-    // ── input / focus / blur ───────────────────────────────────────
-    input.addEventListener('input', function () {
-        clearTimeout(timer);
-        const q = this.value.trim();
-        if (q.length < 2) { closeDropdown(); return; }
-        timer = setTimeout(() => fetchCommanders(q), DEBOUNCE_MS);
-    });
+    // ── Format toggle ──────────────────────────────────────────────────────
+    const fmtSelect  = document.getElementById('{{ form.format.vars.id }}');
+    const cmdSection = document.getElementById('commander-section');
 
-    input.addEventListener('blur', () => setTimeout(closeDropdown, 150));
-
-    document.addEventListener('click', function (e) {
-        if (!input.contains(e.target) && !dropdown.contains(e.target)) closeDropdown();
-    });
-}());
-
-// ── Format → commander field visibility ────────────────────────────
-(function () {
-    const fmt      = document.getElementById('{{ form.format.vars.id }}');
-    const section  = document.getElementById('commander-section');
-    const cmdInput = document.getElementById('{{ form.commander.vars.id }}');
-    const cmdDrop  = document.getElementById('commander-dropdown');
-    if (!fmt || !section) return;
-
-    function toggle() {
-        const show = fmt.value === 'Commander';
-        section.style.display = show ? '' : 'none';
-        if (!show) {
-            if (cmdInput) cmdInput.value = '';
-            if (cmdDrop)  cmdDrop.style.display = 'none';
+    function toggleFormat() {
+        const isCommander = fmtSelect.value === 'Commander';
+        cmdSection.style.display = isCommander ? '' : 'none';
+        if (!isCommander) {
+            cmdInput.value = '';
+            cmdDropdown.style.display = 'none';
+            commanderColors = [];
+            hidePartner();
         }
     }
 
-    fmt.addEventListener('change', toggle);
-    toggle();
+    fmtSelect.addEventListener('change', toggleFormat);
+    toggleFormat();
+
+    // ── Edit: restore partner section for existing commander ───────────────
+    const savedCommander = cmdInput.value.trim();
+    if (savedCommander) {
+        fetch('/api/commanders/info?name=' + encodeURIComponent(savedCommander))
+            .then(r => r.ok ? r.json() : null)
+            .then(card => {
+                if (card && card.partner_type) {
+                    showPartner(card.partner_type);
+                    // partner input already has its saved value from the form; leave colors alone
+                }
+            })
+            .catch(() => {});
+    }
 }());
 </script>
 {% endblock %}

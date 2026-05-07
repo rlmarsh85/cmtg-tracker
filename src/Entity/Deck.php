@@ -26,6 +26,9 @@ class Deck
     #[ORM\Column(length: 150, nullable: true)]
     private ?string $commander = null;
 
+    #[ORM\Column(length: 150, nullable: true)]
+    private ?string $partner = null;
+
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
     #[Assert\Choice(choices: Deck::FORMATS)]
@@ -62,6 +65,9 @@ class Deck
 
     public function getCommander(): ?string { return $this->commander; }
     public function setCommander(?string $commander): static { $this->commander = $commander; return $this; }
+
+    public function getPartner(): ?string { return $this->partner; }
+    public function setPartner(?string $partner): static { $this->partner = $partner; return $this; }
 
     public function getFormat(): string { return $this->format; }
     public function setFormat(string $format): static { $this->format = $format; return $this; }

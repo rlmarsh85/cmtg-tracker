@@ -48,7 +48,10 @@
                             <span class="text-muted">—</span>
                         {% endif %}
                     </td>
-                    <td>{{ deck.commander ?? '—' }}</td>
+                    <td>
+                        {{ deck.commander ?? '—' }}
+                        {% if deck.partner %}<small class="text-muted"> &amp; {{ deck.partner }}</small>{% endif %}
+                    </td>
                     <td>
                         <a href="{{ path('player_show', {id: deck.player.id}) }}">{{ deck.player.username }}</a>
                     </td>

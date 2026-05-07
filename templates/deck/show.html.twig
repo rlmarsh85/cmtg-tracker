@@ -36,6 +36,10 @@
     <div class="card-body">
         <small class="text-muted d-block">Commander / General</small>
         <strong>{{ deck.commander }}</strong>
+        {% if deck.partner %}
+            <span class="text-muted mx-2">&amp;</span>
+            <strong>{{ deck.partner }}</strong>
+        {% endif %}
     </div>
 </div>
 {% endif %}

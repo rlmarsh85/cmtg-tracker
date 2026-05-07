@@ -32,9 +32,14 @@ class DeckType extends AbstractType
                 'required' => false,
             ])
             ->add('commander', TextType::class, [
-                'label' => 'Commander / General',
+                'label'    => 'Commander / General',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'e.g. Atraxa, Praetors\' Voice'],
+                'attr'     => ['class' => 'form-control'],
+            ])
+            ->add('partner', TextType::class, [
+                'label'    => 'Partner',
+                'required' => false,
+                'attr'     => ['class' => 'form-control'],
             ])
             ->add('notes', TextareaType::class, [
                 'label' => 'Notes',
