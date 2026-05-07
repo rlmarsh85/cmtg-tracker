@@ -39,6 +39,9 @@
         .color-checkbox-label .mtg-pip { width: 16px; height: 16px; margin-right: 0; }
         .color-cb-input { display: none; }
         .color-cb-input:checked + .color-checkbox-label { border-color: #7c3aed; background-color: rgba(124,58,237,0.15); }
+        .cmd-thumb { height: 44px; width: auto; border-radius: 3px; vertical-align: middle; cursor: default; }
+        .cmd-thumb-lg { height: 120px; width: auto; border-radius: 6px; vertical-align: middle; cursor: default; }
+        #cmd-float { display: none; position: fixed; z-index: 9500; pointer-events: none; width: 220px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.85); }
     </style>
     {% block stylesheets %}{% endblock %}
 </head>
@@ -93,7 +96,48 @@
     {% block body %}{% endblock %}
 </main>
 
+<img id="cmd-float" src="" alt="">
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+    const float = document.getElementById('cmd-float');
+    if (!float) return;
+
+    const W = 220, H = 308; // ~card aspect ratio at 220px wide
+
+    function position(x, y) {
+        const vw = window.innerWidth, vh = window.innerHeight;
+        let left = x + 18;
+        let top  = y - H / 2;
+        if (left + W > vw - 8) left = x - W - 18;
+        if (top < 8)           top  = 8;
+        if (top + H > vh - 8)  top  = vh - H - 8;
+        float.style.left = left + 'px';
+        float.style.top  = top  + 'px';
+    }
+
+    document.addEventListener('mouseover', function (e) {
+        const el = e.target.closest('[data-card-preview]');
+        if (!el) return;
+        float.src = el.dataset.cardPreview;
+        float.style.display = 'block';
+        position(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (float.style.display !== 'none') position(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('mouseout', function (e) {
+        const el = e.target.closest('[data-card-preview]');
+        if (!el) return;
+        if (!e.relatedTarget || !e.relatedTarget.closest('[data-card-preview]')) {
+            float.style.display = 'none';
+        }
+    });
+}());
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

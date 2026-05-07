@@ -34,33 +34,43 @@
 {% if deck.commander %}
 <div class="card mb-4">
     <div class="card-body">
-        <small class="text-muted d-block mb-1">Commander / General</small>
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            <div>
-                {% if deck.commander.colorIdentity %}
-                    {% if deck.commander.colorIdentity.colors is empty %}
-                        <span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>
-                    {% else %}
-                        {% for color in deck.commander.colorIdentity.colors %}
-                            <span class="mtg-pip mtg-pip-{{ color.name }}" title="{{ color.name }}"></span>
-                        {% endfor %}
-                    {% endif %}
+        <small class="text-muted d-block mb-3">Commander / General</small>
+        <div class="d-flex align-items-start gap-4 flex-wrap">
+            <div class="d-flex flex-column align-items-center gap-2">
+                {% if deck.commander.imageUri %}
+                    <img src="{{ deck.commander.imageUri }}" class="cmd-thumb-lg" data-card-preview="{{ deck.commander.imageUri }}" alt="{{ deck.commander.name }}">
                 {% endif %}
-                <strong class="ms-1">{{ deck.commander.name }}</strong>
-            </div>
-            {% if deck.partner %}
-                <span class="text-muted">&amp;</span>
-                <div>
-                    {% if deck.partner.colorIdentity %}
-                        {% if deck.partner.colorIdentity.colors is empty %}
+                <div class="text-center">
+                    {% if deck.commander.colorIdentity %}
+                        {% if deck.commander.colorIdentity.colors is empty %}
                             <span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>
                         {% else %}
-                            {% for color in deck.partner.colorIdentity.colors %}
+                            {% for color in deck.commander.colorIdentity.colors %}
                                 <span class="mtg-pip mtg-pip-{{ color.name }}" title="{{ color.name }}"></span>
                             {% endfor %}
                         {% endif %}
                     {% endif %}
-                    <strong class="ms-1">{{ deck.partner.name }}</strong>
+                    <strong class="ms-1">{{ deck.commander.name }}</strong>
+                </div>
+            </div>
+            {% if deck.partner %}
+                <div class="text-muted align-self-center fs-4">&amp;</div>
+                <div class="d-flex flex-column align-items-center gap-2">
+                    {% if deck.partner.imageUri %}
+                        <img src="{{ deck.partner.imageUri }}" class="cmd-thumb-lg" data-card-preview="{{ deck.partner.imageUri }}" alt="{{ deck.partner.name }}">
+                    {% endif %}
+                    <div class="text-center">
+                        {% if deck.partner.colorIdentity %}
+                            {% if deck.partner.colorIdentity.colors is empty %}
+                                <span class="mtg-pip mtg-pip-Colorless" title="Colorless"></span>
+                            {% else %}
+                                {% for color in deck.partner.colorIdentity.colors %}
+                                    <span class="mtg-pip mtg-pip-{{ color.name }}" title="{{ color.name }}"></span>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                        <strong class="ms-1">{{ deck.partner.name }}</strong>
+                    </div>
                 </div>
             {% endif %}
         </div>

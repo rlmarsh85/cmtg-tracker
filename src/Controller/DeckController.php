@@ -103,6 +103,7 @@ class DeckController extends AbstractController
                 $colorLetters,
                 $form->get('commander_partner_type')->getData() ?: null,
                 $form->get('commander_partner_with')->getData() ?: null,
+                $form->get('commander_image_uri')->getData() ?: null,
             ));
         } else {
             $deck->setCommander(null);
@@ -111,7 +112,13 @@ class DeckController extends AbstractController
         $partnerName = trim($form->get('partner')->getData() ?? '');
         if ($partnerName) {
             $partnerColorLetters = $this->parseLetters($form->get('partner_colors')->getData());
-            $deck->setPartner($commanderService->findOrCreate($partnerName, $partnerColorLetters));
+            $deck->setPartner($commanderService->findOrCreate(
+                $partnerName,
+                $partnerColorLetters,
+                null,
+                null,
+                $form->get('partner_image_uri')->getData() ?: null,
+            ));
         } else {
             $deck->setPartner(null);
         }

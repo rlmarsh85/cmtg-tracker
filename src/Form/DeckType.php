@@ -41,6 +41,7 @@ class DeckType extends AbstractType
             ->add('commander_colors', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('commander_partner_type', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('commander_partner_with', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('commander_image_uri', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('partner', TextType::class, [
                 'label'    => 'Partner',
                 'required' => false,
@@ -48,6 +49,7 @@ class DeckType extends AbstractType
                 'attr'     => ['class' => 'form-control'],
             ])
             ->add('partner_colors', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('partner_image_uri', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('notes', TextareaType::class, [
                 'label' => 'Notes',
                 'required' => false,

@@ -138,7 +138,9 @@
     const cmdColorsInput      = document.getElementById('{{ form.commander_colors.vars.id }}');
     const cmdPartnerTypeInput = document.getElementById('{{ form.commander_partner_type.vars.id }}');
     const cmdPartnerWithInput = document.getElementById('{{ form.commander_partner_with.vars.id }}');
+    const cmdImageInput       = document.getElementById('{{ form.commander_image_uri.vars.id }}');
     const partnerColorsInput  = document.getElementById('{{ form.partner_colors.vars.id }}');
+    const partnerImageInput   = document.getElementById('{{ form.partner_image_uri.vars.id }}');
 
     // ── Color state ────────────────────────────────────────────────────────
     let commanderColors = [];
@@ -266,6 +268,7 @@
         partnerInput.classList.remove('partner-fixed');
         partnerColors = [];
         if (partnerColorsInput) partnerColorsInput.value = '';
+        if (partnerImageInput)  partnerImageInput.value  = '';
     }
 
     makeAutocomplete(
@@ -275,6 +278,7 @@
         card => {
             partnerColors = card.color_identity || [];
             if (partnerColorsInput) partnerColorsInput.value = partnerColors.join(',');
+            if (partnerImageInput)  partnerImageInput.value  = card.image_uri || '';
             applyColors();
         }
     );
@@ -295,7 +299,9 @@
             if (cmdColorsInput)      cmdColorsInput.value      = commanderColors.join(',');
             if (cmdPartnerTypeInput) cmdPartnerTypeInput.value = card.partner_type || '';
             if (cmdPartnerWithInput) cmdPartnerWithInput.value = card.partner_with || '';
+            if (cmdImageInput)       cmdImageInput.value       = card.image_uri || '';
             if (partnerColorsInput)  partnerColorsInput.value  = '';
+            if (partnerImageInput)   partnerImageInput.value   = '';
 
             if (card.partner_type) {
                 showPartner(card.partner_type);
@@ -308,6 +314,7 @@
                             if (info) {
                                 partnerColors = info.color_identity || [];
                                 if (partnerColorsInput) partnerColorsInput.value = partnerColors.join(',');
+                                if (partnerImageInput)  partnerImageInput.value  = info.image_uri || '';
                                 applyColors();
                             }
                         })
@@ -335,6 +342,7 @@
             if (cmdColorsInput)      cmdColorsInput.value      = '';
             if (cmdPartnerTypeInput) cmdPartnerTypeInput.value = '';
             if (cmdPartnerWithInput) cmdPartnerWithInput.value = '';
+            if (cmdImageInput)       cmdImageInput.value       = '';
             hidePartner();
         }
     }
@@ -353,6 +361,7 @@
                 if (cmdColorsInput)      cmdColorsInput.value      = commanderColors.join(',');
                 if (cmdPartnerTypeInput) cmdPartnerTypeInput.value = card.partner_type || '';
                 if (cmdPartnerWithInput) cmdPartnerWithInput.value = card.partner_with || '';
+                if (cmdImageInput)       cmdImageInput.value       = card.image_uri || '';
 
                 if (card.partner_type) {
                     showPartner(card.partner_type);
@@ -365,6 +374,7 @@
                                 if (info) {
                                     partnerColors = info.color_identity || [];
                                     if (partnerColorsInput) partnerColorsInput.value = partnerColors.join(',');
+                                    if (partnerImageInput)  partnerImageInput.value  = info.image_uri || '';
                                 }
                             })
                             .catch(() => {});

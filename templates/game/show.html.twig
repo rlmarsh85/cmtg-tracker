@@ -44,7 +44,24 @@
                     </td>
                     <td>
                         {% if gp.deck %}
-                        <a href="{{ path('deck_show', {id: gp.deck.id}) }}">{{ gp.deck.name }}</a>
+                        <div>
+                            <a href="{{ path('deck_show', {id: gp.deck.id}) }}">{{ gp.deck.name }}</a>
+                            {% if gp.deck.commander %}
+                            <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+                                {% if gp.deck.commander.imageUri %}
+                                    <img src="{{ gp.deck.commander.imageUri }}" class="cmd-thumb" data-card-preview="{{ gp.deck.commander.imageUri }}" alt="{{ gp.deck.commander.name }}">
+                                {% endif %}
+                                <small class="text-muted">{{ gp.deck.commander.name }}</small>
+                                {% if gp.deck.partner %}
+                                    <small class="text-muted">&amp;</small>
+                                    {% if gp.deck.partner.imageUri %}
+                                        <img src="{{ gp.deck.partner.imageUri }}" class="cmd-thumb" data-card-preview="{{ gp.deck.partner.imageUri }}" alt="{{ gp.deck.partner.name }}">
+                                    {% endif %}
+                                    <small class="text-muted">{{ gp.deck.partner.name }}</small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
                         {% else %}
                         <span class="text-muted">—</span>
                         {% endif %}

@@ -20,7 +20,7 @@ class CommanderService
 
     /**
      * Returns an existing Commander by name or creates a new one.
-     * Color identity and partner metadata are backfilled on existing records if still missing.
+     * Any provided metadata (colors, partner info, image URI) backfills missing values on existing records.
      *
      * @param string[] $colorLetters e.g. ['W', 'B']
      */
@@ -29,6 +29,7 @@ class CommanderService
         array $colorLetters = [],
         ?string $partnerType = null,
         ?string $partnerWith = null,
+        ?string $imageUri = null,
     ): Commander {
         $commander = $this->commanderRepository->findOneBy(['name' => $name]);
 
@@ -40,6 +41,9 @@ class CommanderService
                 $commander->setPartnerType($partnerType);
                 $commander->setPartnerWith($partnerWith ?: null);
             }
+            if ($imageUri !== null && $commander->getImageUri() === null) {
+                $commander->setImageUri($imageUri);
+            }
             return $commander;
         }
 
@@ -47,6 +51,7 @@ class CommanderService
         $commander->setName($name);
         $commander->setPartnerType($partnerType ?: null);
         $commander->setPartnerWith($partnerWith ?: null);
+        $commander->setImageUri($imageUri ?: null);
 
         if (!empty($colorLetters)) {
             $commander->setColorIdentity($this->resolveColorIdentity($colorLetters));

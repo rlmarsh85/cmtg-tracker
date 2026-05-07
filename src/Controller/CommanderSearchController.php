@@ -39,6 +39,7 @@ class CommanderSearchController extends AbstractController
                     'color_identity' => $card['color_identity'] ?? [],
                     'partner_type'   => $pi['partner_type'],
                     'partner_with'   => $pi['partner_with'],
+                    'image_uri'      => $this->extractImageUri($card),
                 ];
             }, $data['data'] ?? []);
 
@@ -78,6 +79,7 @@ class CommanderSearchController extends AbstractController
             $results = array_map(fn($card) => [
                 'name'           => $card['name'],
                 'color_identity' => $card['color_identity'] ?? [],
+                'image_uri'      => $this->extractImageUri($card),
             ], $data['data'] ?? []);
 
             return $this->json(array_slice($results, 0, 12));
@@ -110,10 +112,19 @@ class CommanderSearchController extends AbstractController
                 'color_identity' => $card['color_identity'] ?? [],
                 'partner_type'   => $pi['partner_type'],
                 'partner_with'   => $pi['partner_with'],
+                'image_uri'      => $this->extractImageUri($card),
             ]);
         } catch (\Exception) {
             return $this->json(null, 404);
         }
+    }
+
+    // ── Card image extraction (normal face; DFC uses front face) ────────────
+    private function extractImageUri(array $card): ?string
+    {
+        return $card['image_uris']['normal']
+            ?? $card['card_faces'][0]['image_uris']['normal']
+            ?? null;
     }
 
     // ── Partner ability detection ────────────────────────────────────────────

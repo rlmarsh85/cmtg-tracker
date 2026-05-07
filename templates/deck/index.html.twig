@@ -50,8 +50,23 @@
                     </td>
                     <td>
                         {% if deck.commander %}
-                            {{ deck.commander.name }}
-                            {% if deck.partner %}<small class="text-muted"> &amp; {{ deck.partner.name }}</small>{% endif %}
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="d-flex align-items-center gap-1">
+                                    {% if deck.commander.imageUri %}
+                                        <img src="{{ deck.commander.imageUri }}" class="cmd-thumb" data-card-preview="{{ deck.commander.imageUri }}" alt="{{ deck.commander.name }}">
+                                    {% endif %}
+                                    <span>{{ deck.commander.name }}</span>
+                                </div>
+                                {% if deck.partner %}
+                                    <span class="text-muted">&amp;</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        {% if deck.partner.imageUri %}
+                                            <img src="{{ deck.partner.imageUri }}" class="cmd-thumb" data-card-preview="{{ deck.partner.imageUri }}" alt="{{ deck.partner.name }}">
+                                        {% endif %}
+                                        <small>{{ deck.partner.name }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
                         {% else %}
                             <span class="text-muted">—</span>
                         {% endif %}

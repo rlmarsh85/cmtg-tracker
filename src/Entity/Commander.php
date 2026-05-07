@@ -28,6 +28,9 @@ class Commander
     #[ORM\Column(length: 150, nullable: true)]
     private ?string $partnerWith = null;
 
+    #[ORM\Column(length: 512, nullable: true)]
+    private ?string $imageUri = null;
+
     #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'commander')]
     private Collection $decksAsCommander;
 
@@ -53,6 +56,9 @@ class Commander
 
     public function getPartnerWith(): ?string { return $this->partnerWith; }
     public function setPartnerWith(?string $partnerWith): static { $this->partnerWith = $partnerWith; return $this; }
+
+    public function getImageUri(): ?string { return $this->imageUri; }
+    public function setImageUri(?string $imageUri): static { $this->imageUri = $imageUri; return $this; }
 
     public function getDecksAsCommander(): Collection { return $this->decksAsCommander; }
     public function getDecksAsPartner(): Collection { return $this->decksAsPartner; }
