@@ -28,7 +28,37 @@ php bin/console doctrine:fixtures:load
 composer install
 ```
 
-There is no test suite configured. There are no npm/frontend build steps — Bootstrap and Bootstrap Icons are loaded from CDN in `templates/base.html.twig`.
+There are no npm/frontend build steps — Bootstrap and Bootstrap Icons are loaded from CDN in `templates/base.html.twig`.
+
+## Testing
+
+The test suite uses PHPUnit 12 via `symfony/test-pack`.
+
+```bash
+# Run the full test suite
+php bin/phpunit
+
+# Run only unit tests (no database required, fast)
+php bin/phpunit --testsuite Unit
+
+# Run only integration tests (repository tests, requires DB)
+php bin/phpunit --testsuite Integration
+
+# Run only functional tests (controller/form tests, requires DB)
+php bin/phpunit --testsuite Functional
+
+# Run a specific test file
+php bin/phpunit tests/Unit/Entity/DeckTest.php
+
+# Filter to a specific test method
+php bin/phpunit --filter testFindOrCreateReturnsExistingCommander
+```
+
+The test database is `var/test.db` (SQLite, separate from `var/data.db`). Integration and Functional tests recreate the schema automatically via Doctrine's `SchemaTool`. Do not commit `var/test.db` to version control.
+
+Scryfall API calls are mocked in all tests using `MockHttpClient`/`MockResponse` from `symfony/http-client`.
+
+Symfony 7.2+ returns HTTP 422 (not 200) when a form re-renders with validation errors.
 
 ## Architecture
 
