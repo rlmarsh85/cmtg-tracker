@@ -21,7 +21,7 @@ class Deck
     #[ORM\Column(length: 150)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 150)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\ManyToOne(targetEntity: Commander::class, inversedBy: 'decksAsCommander')]
     #[ORM\JoinColumn(nullable: true)]
@@ -45,12 +45,13 @@ class Deck
     #[ORM\ManyToOne(inversedBy: 'decks')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
-    private ?Player $player = null;
+    private Player $player;
 
     #[ORM\ManyToOne(targetEntity: ColorIdentity::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?ColorIdentity $colorIdentity = null;
 
+    /** @var Collection<int, GamePlayer> */
     #[ORM\OneToMany(targetEntity: GamePlayer::class, mappedBy: 'deck')]
     private Collection $gamePlayers;
 
@@ -62,7 +63,7 @@ class Deck
 
     public function getId(): ?int { return $this->id; }
 
-    public function getName(): ?string { return $this->name; }
+    public function getName(): string { return $this->name; }
     public function setName(string $name): static { $this->name = $name; return $this; }
 
     public function getCommander(): ?Commander { return $this->commander; }
@@ -79,13 +80,14 @@ class Deck
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 
-    public function getPlayer(): ?Player { return $this->player; }
-    public function setPlayer(?Player $player): static { $this->player = $player; return $this; }
+    public function getPlayer(): Player { return $this->player; }
+    public function setPlayer(Player $player): static { $this->player = $player; return $this; }
 
     public function getColorIdentity(): ?ColorIdentity { return $this->colorIdentity; }
     public function setColorIdentity(?ColorIdentity $colorIdentity): static { $this->colorIdentity = $colorIdentity; return $this; }
 
+    /** @return Collection<int, GamePlayer> */
     public function getGamePlayers(): Collection { return $this->gamePlayers; }
 
-    public function __toString(): string { return $this->name ?? ''; }
+    public function __toString(): string { return $this->name; }
 }

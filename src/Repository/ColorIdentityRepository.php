@@ -6,6 +6,7 @@ use App\Entity\ColorIdentity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<ColorIdentity> */
 class ColorIdentityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -13,6 +14,7 @@ class ColorIdentityRepository extends ServiceEntityRepository
         parent::__construct($registry, ColorIdentity::class);
     }
 
+    /** @param list<string> $colorNames */
     public function findByColorNames(array $colorNames): ?ColorIdentity
     {
         $sorted = $colorNames;

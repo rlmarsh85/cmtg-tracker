@@ -6,6 +6,7 @@ use App\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Player> */
 class PlayerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -13,6 +14,7 @@ class PlayerRepository extends ServiceEntityRepository
         parent::__construct($registry, Player::class);
     }
 
+    /** @return list<array{0: Player, totalGames: int<0, max>, wins: int}> */
     public function findWithStats(): array
     {
         return $this->createQueryBuilder('p')

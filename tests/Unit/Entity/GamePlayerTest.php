@@ -29,28 +29,11 @@ class GamePlayerTest extends TestCase
         $this->assertSame($game, $this->gamePlayer->getGame());
     }
 
-    public function testSetGameToNull(): void
-    {
-        $this->gamePlayer->setGame(null);
-        $this->assertNull($this->gamePlayer->getGame());
-    }
-
-    public function testGetGameReturnsNullByDefault(): void
-    {
-        $this->assertNull($this->gamePlayer->getGame());
-    }
-
     public function testSetAndGetPlayer(): void
     {
         $player = $this->createStub(Player::class);
         $this->gamePlayer->setPlayer($player);
         $this->assertSame($player, $this->gamePlayer->getPlayer());
-    }
-
-    public function testSetPlayerToNull(): void
-    {
-        $this->gamePlayer->setPlayer(null);
-        $this->assertNull($this->gamePlayer->getPlayer());
     }
 
     public function testSetAndGetDeck(): void

@@ -48,9 +48,9 @@ class DeckTest extends TestCase
         $this->assertSame($this->deck, $result);
     }
 
-    public function testGetNameReturnsNullByDefault(): void
+    public function testGetNameDefaultIsEmpty(): void
     {
-        $this->assertNull($this->deck->getName());
+        $this->assertSame('', $this->deck->getName());
     }
 
     public function testDefaultFormatIsCommander(): void
@@ -134,12 +134,6 @@ class DeckTest extends TestCase
         $this->assertSame($player, $this->deck->getPlayer());
     }
 
-    public function testSetPlayerToNull(): void
-    {
-        $this->deck->setPlayer(null);
-        $this->assertNull($this->deck->getPlayer());
-    }
-
     public function testSetAndGetColorIdentity(): void
     {
         $ci = $this->createStub(ColorIdentity::class);
@@ -164,7 +158,7 @@ class DeckTest extends TestCase
         $this->assertSame('Sliver Queen Combo', (string) $this->deck);
     }
 
-    public function testToStringReturnsEmptyStringWhenNameIsNull(): void
+    public function testToStringReturnsEmptyStringByDefault(): void
     {
         $this->assertSame('', (string) $this->deck);
     }

@@ -18,6 +18,7 @@ class ColorIdentity
     #[ORM\Column(length: 50, unique: true)]
     private string $name;
 
+    /** @var Collection<int, Color> */
     #[ORM\ManyToMany(targetEntity: Color::class)]
     #[ORM\JoinTable(name: 'color_identity_color')]
     private Collection $colors;
@@ -30,6 +31,8 @@ class ColorIdentity
     public function getId(): ?int { return $this->id; }
     public function getName(): string { return $this->name; }
     public function setName(string $name): static { $this->name = $name; return $this; }
+
+    /** @return Collection<int, Color> */
     public function getColors(): Collection { return $this->colors; }
     public function __toString(): string { return $this->name; }
 }

@@ -52,9 +52,9 @@ class PlayerTest extends TestCase
         $this->assertSame($this->player, $result);
     }
 
-    public function testGetUsernameReturnsNullByDefault(): void
+    public function testGetUsernameDefaultIsEmpty(): void
     {
-        $this->assertNull($this->player->getUsername());
+        $this->assertSame('', $this->player->getUsername());
     }
 
     public function testSetAndGetEmail(): void
@@ -63,47 +63,51 @@ class PlayerTest extends TestCase
         $this->assertSame('alice@example.com', $this->player->getEmail());
     }
 
-    public function testGetEmailReturnsNullByDefault(): void
+    public function testGetEmailDefaultIsEmpty(): void
     {
-        $this->assertNull($this->player->getEmail());
+        $this->assertSame('', $this->player->getEmail());
     }
 
     public function testAddDeckIncreasesCollection(): void
     {
+        $player = new Player();
+        $player->setUsername('owner');
+        $player->setEmail('owner@example.com');
         $deck = new Deck();
-        $this->player->addDeck($deck);
-        $this->assertCount(1, $this->player->getDecks());
+        $player->addDeck($deck);
+        $this->assertCount(1, $player->getDecks());
     }
 
     public function testAddDeckSetsPlayerOnDeck(): void
     {
+        $player = new Player();
+        $player->setUsername('owner');
+        $player->setEmail('owner@example.com');
         $deck = new Deck();
-        $this->player->addDeck($deck);
-        $this->assertSame($this->player, $deck->getPlayer());
+        $player->addDeck($deck);
+        $this->assertSame($player, $deck->getPlayer());
     }
 
     public function testAddSameDeckTwiceCountsOnce(): void
     {
+        $player = new Player();
+        $player->setUsername('owner');
+        $player->setEmail('owner@example.com');
         $deck = new Deck();
-        $this->player->addDeck($deck);
-        $this->player->addDeck($deck);
-        $this->assertCount(1, $this->player->getDecks());
+        $player->addDeck($deck);
+        $player->addDeck($deck);
+        $this->assertCount(1, $player->getDecks());
     }
 
     public function testRemoveDeckDecreasesCollection(): void
     {
+        $player = new Player();
+        $player->setUsername('owner');
+        $player->setEmail('owner@example.com');
         $deck = new Deck();
-        $this->player->addDeck($deck);
-        $this->player->removeDeck($deck);
-        $this->assertCount(0, $this->player->getDecks());
-    }
-
-    public function testRemoveDeckNullsPlayerReference(): void
-    {
-        $deck = new Deck();
-        $this->player->addDeck($deck);
-        $this->player->removeDeck($deck);
-        $this->assertNull($deck->getPlayer());
+        $player->addDeck($deck);
+        $player->removeDeck($deck);
+        $this->assertCount(0, $player->getDecks());
     }
 
     public function testRemoveNonExistentDeckDoesNothing(): void
@@ -124,7 +128,7 @@ class PlayerTest extends TestCase
         $this->assertSame('charlie', (string) $this->player);
     }
 
-    public function testToStringReturnsEmptyStringWhenUsernameIsNull(): void
+    public function testToStringReturnsEmptyStringByDefault(): void
     {
         $this->assertSame('', (string) $this->player);
     }

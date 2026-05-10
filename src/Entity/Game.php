@@ -18,7 +18,7 @@ class Game
 
     #[ORM\Column(type: 'date_immutable')]
     #[Assert\NotNull]
-    private ?\DateTimeImmutable $playedAt = null;
+    private \DateTimeImmutable $playedAt;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
@@ -31,6 +31,7 @@ class Game
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
+    /** @var Collection<int, GamePlayer> */
     #[ORM\OneToMany(targetEntity: GamePlayer::class, mappedBy: 'game', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $participants;
 
@@ -43,7 +44,7 @@ class Game
 
     public function getId(): ?int { return $this->id; }
 
-    public function getPlayedAt(): ?\DateTimeImmutable { return $this->playedAt; }
+    public function getPlayedAt(): \DateTimeImmutable { return $this->playedAt; }
     public function setPlayedAt(\DateTimeImmutable $playedAt): static { $this->playedAt = $playedAt; return $this; }
 
     public function getFormat(): string { return $this->format; }
@@ -54,6 +55,7 @@ class Game
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 
+    /** @return Collection<int, GamePlayer> */
     public function getParticipants(): Collection { return $this->participants; }
 
     public function addParticipant(GamePlayer $participant): static
@@ -67,11 +69,7 @@ class Game
 
     public function removeParticipant(GamePlayer $participant): static
     {
-        if ($this->participants->removeElement($participant)) {
-            if ($participant->getGame() === $this) {
-                $participant->setGame(null);
-            }
-        }
+        $this->participants->removeElement($participant);
         return $this;
     }
 

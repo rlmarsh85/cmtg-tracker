@@ -126,6 +126,7 @@ class CommanderSearchController extends AbstractController
     }
 
     // ── Card image extraction ────────────────────────────────────────────────
+    /** @param array<string, mixed> $card */
     private function extractImageUri(array $card): ?string
     {
         return $card['image_uris']['normal']
@@ -134,12 +135,20 @@ class CommanderSearchController extends AbstractController
     }
 
     // ── Partner ability detection ────────────────────────────────────────────
+    /**
+     * @param array<string, mixed> $card
+     * @return array{partner_type: string|null, partner_with: string|null}
+     */
     private function extractPartnerInfo(array $card): array
     {
-        $keywords = $card['keywords'] ?? [];
+        $rawKeywords = $card['keywords'] ?? null;
+        $keywords = is_array($rawKeywords) ? $rawKeywords : [];
         if (empty($keywords) && isset($card['card_faces'])) {
             foreach ($card['card_faces'] as $face) {
-                $keywords = array_merge($keywords, $face['keywords'] ?? []);
+                $faceKeywords = is_array($face) && isset($face['keywords']) && is_array($face['keywords'])
+                    ? $face['keywords']
+                    : [];
+                $keywords = array_merge($keywords, $faceKeywords);
             }
             $keywords = array_values(array_unique($keywords));
         }

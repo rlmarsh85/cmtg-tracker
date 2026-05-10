@@ -19,19 +19,21 @@ class Player
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
-    private ?string $username = null;
+    private string $username = '';
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    private ?string $email = null;
+    private string $email = '';
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
+    /** @var Collection<int, Deck> */
     #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'player', cascade: ['persist'], orphanRemoval: true)]
     private Collection $decks;
 
+    /** @var Collection<int, GamePlayer> */
     #[ORM\OneToMany(targetEntity: GamePlayer::class, mappedBy: 'player')]
     private Collection $gamePlayers;
 
@@ -44,14 +46,15 @@ class Player
 
     public function getId(): ?int { return $this->id; }
 
-    public function getUsername(): ?string { return $this->username; }
+    public function getUsername(): string { return $this->username; }
     public function setUsername(string $username): static { $this->username = $username; return $this; }
 
-    public function getEmail(): ?string { return $this->email; }
+    public function getEmail(): string { return $this->email; }
     public function setEmail(string $email): static { $this->email = $email; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 
+    /** @return Collection<int, Deck> */
     public function getDecks(): Collection { return $this->decks; }
 
     public function addDeck(Deck $deck): static
@@ -65,15 +68,12 @@ class Player
 
     public function removeDeck(Deck $deck): static
     {
-        if ($this->decks->removeElement($deck)) {
-            if ($deck->getPlayer() === $this) {
-                $deck->setPlayer(null);
-            }
-        }
+        $this->decks->removeElement($deck);
         return $this;
     }
 
+    /** @return Collection<int, GamePlayer> */
     public function getGamePlayers(): Collection { return $this->gamePlayers; }
 
-    public function __toString(): string { return $this->username ?? ''; }
+    public function __toString(): string { return $this->username; }
 }

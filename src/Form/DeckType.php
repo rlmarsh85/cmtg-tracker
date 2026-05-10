@@ -13,12 +13,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/** @extends AbstractType<Deck> */
 class DeckType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, ['label' => 'Deck Name', 'attr' => ['class' => 'form-control']])
+            ->add('name', TextType::class, ['label' => 'Deck Name', 'attr' => ['class' => 'form-control'], 'empty_data' => ''])
             ->add('format', ChoiceType::class, [
                 'label' => 'Format',
                 'choices' => array_combine(Deck::FORMATS, Deck::FORMATS),

@@ -61,6 +61,7 @@ class CommanderService
         return $commander;
     }
 
+    /** @param list<string> $colorLetters */
     private function resolveColorIdentity(array $colorLetters): ?ColorIdentity
     {
         $names = array_values(array_filter(array_map(

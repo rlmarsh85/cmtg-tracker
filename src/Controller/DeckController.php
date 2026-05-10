@@ -9,6 +9,7 @@ use App\Repository\DeckRepository;
 use App\Service\CommanderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -87,7 +88,8 @@ class DeckController extends AbstractController
         return $this->redirectToRoute('deck_index');
     }
 
-    private function resolveCommanders($form, Deck $deck, CommanderService $commanderService): void
+    /** @param FormInterface<mixed> $form */
+    private function resolveCommanders(FormInterface $form, Deck $deck, CommanderService $commanderService): void
     {
         if ($deck->getFormat() !== 'Commander') {
             $deck->setCommander(null);
@@ -124,6 +126,7 @@ class DeckController extends AbstractController
         }
     }
 
+    /** @return list<string> */
     private function parseLetters(?string $csv): array
     {
         if (!$csv) return [];

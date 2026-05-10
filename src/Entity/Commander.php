@@ -31,9 +31,11 @@ class Commander
     #[ORM\Column(length: 512, nullable: true)]
     private ?string $imageUri = null;
 
+    /** @var Collection<int, Deck> */
     #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'commander')]
     private Collection $decksAsCommander;
 
+    /** @var Collection<int, Deck> */
     #[ORM\OneToMany(targetEntity: Deck::class, mappedBy: 'partner')]
     private Collection $decksAsPartner;
 
@@ -60,7 +62,10 @@ class Commander
     public function getImageUri(): ?string { return $this->imageUri; }
     public function setImageUri(?string $imageUri): static { $this->imageUri = $imageUri; return $this; }
 
+    /** @return Collection<int, Deck> */
     public function getDecksAsCommander(): Collection { return $this->decksAsCommander; }
+
+    /** @return Collection<int, Deck> */
     public function getDecksAsPartner(): Collection { return $this->decksAsPartner; }
 
     public function __toString(): string { return $this->name; }

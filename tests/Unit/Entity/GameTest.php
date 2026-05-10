@@ -107,14 +107,6 @@ class GameTest extends TestCase
         $this->assertCount(0, $this->game->getParticipants());
     }
 
-    public function testRemoveParticipantNullsGameReference(): void
-    {
-        $gp = new GamePlayer();
-        $this->game->addParticipant($gp);
-        $this->game->removeParticipant($gp);
-        $this->assertNull($gp->getGame());
-    }
-
     public function testGetWinnerReturnsNullWithNoParticipants(): void
     {
         $this->assertNull($this->game->getWinner());

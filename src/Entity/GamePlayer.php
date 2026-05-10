@@ -16,12 +16,12 @@ class GamePlayer
 
     #[ORM\ManyToOne(inversedBy: 'participants')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Game $game = null;
+    private Game $game;
 
     #[ORM\ManyToOne(inversedBy: 'gamePlayers')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
-    private ?Player $player = null;
+    private Player $player;
 
     #[ORM\ManyToOne(inversedBy: 'gamePlayers')]
     #[ORM\JoinColumn(nullable: true)]
@@ -36,11 +36,11 @@ class GamePlayer
 
     public function getId(): ?int { return $this->id; }
 
-    public function getGame(): ?Game { return $this->game; }
-    public function setGame(?Game $game): static { $this->game = $game; return $this; }
+    public function getGame(): Game { return $this->game; }
+    public function setGame(Game $game): static { $this->game = $game; return $this; }
 
-    public function getPlayer(): ?Player { return $this->player; }
-    public function setPlayer(?Player $player): static { $this->player = $player; return $this; }
+    public function getPlayer(): Player { return $this->player; }
+    public function setPlayer(Player $player): static { $this->player = $player; return $this; }
 
     public function getDeck(): ?Deck { return $this->deck; }
     public function setDeck(?Deck $deck): static { $this->deck = $deck; return $this; }
