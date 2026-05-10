@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit:src/*.php",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "vendor/bin/phpstan analyse --memory-limit=256M --no-progress"
+          },
+          {
+            "type": "command",
+            "command": "bin/phpunit --stop-on-failure"
+          }
+        ]
+      }
+    ]
+  }
+}
