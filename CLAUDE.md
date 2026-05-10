@@ -60,6 +60,20 @@ Scryfall API calls are mocked in all tests using `MockHttpClient`/`MockResponse`
 
 Symfony 7.2+ returns HTTP 422 (not 200) when a form re-renders with validation errors.
 
+## Static Analysis
+
+PHPStan 2.x is configured at level 6 with the Symfony, Doctrine, and PHPUnit extensions.
+
+```bash
+# Run static analysis
+php vendor/bin/phpstan analyse --memory-limit=256M
+
+# Run with verbose output (shows progress per file)
+php vendor/bin/phpstan analyse --memory-limit=256M -v
+```
+
+Config is in `phpstan.neon`. The Doctrine extension uses `tests/doctrine_object_manager.php` to load entity metadata; the Symfony extension reads the compiled dev container at `var/cache/dev/App_KernelDevDebugContainer.xml` — rebuild it with `php bin/console cache:warmup` if it goes stale.
+
 ## Architecture
 
 Symfony 7.4 application with SQLite (`var/data.db`). No authentication — all routes are public.
