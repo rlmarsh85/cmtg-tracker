@@ -28,6 +28,7 @@ class GameTypeTest extends TypeTestCase
         $this->assertTrue($form->has('playedAt'));
         $this->assertTrue($form->has('format'));
         $this->assertTrue($form->has('notes'));
+        $this->assertTrue($form->has('turnCount'));
     }
 
     public function testValidDataCreatesGame(): void
@@ -82,5 +83,31 @@ class GameTypeTest extends TypeTestCase
             $form->submit(['playedAt' => '2024-01-15', 'format' => $format]);
             $this->assertTrue($form->isValid(), "Format '{$format}' should be valid");
         }
+    }
+
+    public function testTurnCountIsOptional(): void
+    {
+        $form = $this->factory->create(GameType::class);
+        $form->submit(['playedAt' => '2024-01-15', 'format' => 'Commander']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertNull($form->getData()->getTurnCount());
+    }
+
+    public function testTurnCountIsSavedWhenProvided(): void
+    {
+        $form = $this->factory->create(GameType::class);
+        $form->submit(['playedAt' => '2024-01-15', 'format' => 'Commander', 'turnCount' => '15']);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertSame(15, $form->getData()->getTurnCount());
+    }
+
+    public function testNegativeTurnCountIsInvalid(): void
+    {
+        $form = $this->factory->create(GameType::class);
+        $form->submit(['playedAt' => '2024-01-15', 'format' => 'Commander', 'turnCount' => '-1']);
+
+        $this->assertFalse($form->isValid());
     }
 }

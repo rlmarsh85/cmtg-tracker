@@ -144,4 +144,28 @@ class GameTest extends TestCase
         $this->game->addParticipant($winner2);
         $this->assertSame($winner1, $this->game->getWinner());
     }
+
+    public function testTurnCountDefaultsToNull(): void
+    {
+        $this->assertNull($this->game->getTurnCount());
+    }
+
+    public function testSetAndGetTurnCount(): void
+    {
+        $this->game->setTurnCount(42);
+        $this->assertSame(42, $this->game->getTurnCount());
+    }
+
+    public function testSetTurnCountToNull(): void
+    {
+        $this->game->setTurnCount(42);
+        $this->game->setTurnCount(null);
+        $this->assertNull($this->game->getTurnCount());
+    }
+
+    public function testSetTurnCountReturnsSelf(): void
+    {
+        $result = $this->game->setTurnCount(10);
+        $this->assertSame($this->game, $result);
+    }
 }

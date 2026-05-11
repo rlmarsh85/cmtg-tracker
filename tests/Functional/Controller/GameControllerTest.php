@@ -219,4 +219,32 @@ class GameControllerTest extends WebTestCase
         $em->clear();
         $this->assertNotNull($em->find(Game::class, $id));
     }
+
+    public function testCreateGameWithTurnCountPersistsTurnCount(): void
+    {
+        $client = $this->bootWithSchema();
+        $player = $this->seedPlayer();
+        $test_num_turns = 25;
+
+        $crawler = $client->request('GET', '/games/new');
+        $form = $crawler->selectButton('Save')->form([
+            'game[playedAt]'  => '2024-03-10',
+            'game[format]'    => 'Commander',
+            'game[turnCount]' => $test_num_turns,
+        ]);
+        $formValues = $form->getPhpValues();
+        $formValues['participants'] = [
+            ['player_id' => (string) $player->getId(), 'winner' => '1'],
+        ];
+        $client->request($form->getMethod(), $form->getUri(), $formValues);
+
+        $this->assertResponseRedirects();
+
+        $repo = static::getContainer()->get(GameRepository::class);
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+        $games = $repo->findAll();
+        $this->assertSame($test_num_turns, $games[0]->getTurnCount());
+    }
+
 }

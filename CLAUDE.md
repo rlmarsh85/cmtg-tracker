@@ -32,6 +32,16 @@ There are no npm/frontend build steps — Bootstrap and Bootstrap Icons are load
 
 ## Testing
 
+- **Definition of Done:** You MUST NOT consider any feature addition, bug fix, or code modification complete until the corresponding PHPUnit tests have been written or updated.
+- **Test Location:** Every class in `src/` must have a corresponding test in `tests/` mirroring the directory structure (e.g., `src/Service/Invoice.php` -> `tests/Service/InvoiceTest.php`).
+- **Workflow:** 
+  1. When adding or modifying code, immediately locate the corresponding test file.
+  2. If the test file does not exist, you MUST create it.
+  3. Write tests covering your new logic.
+  4. Run the PHPUnit hook to verify the tests pass before reporting the task as finished.
+- **Never Ask for Permission:** Do not ask "Would you like me to write tests for this?" Just do it automatically as part of the implementation step.
+
+
 The test suite uses PHPUnit 12 via `symfony/test-pack`.
 
 ```bash
@@ -59,6 +69,14 @@ The test database is `var/test.db` (SQLite, separate from `var/data.db`). Integr
 Scryfall API calls are mocked in all tests using `MockHttpClient`/`MockResponse` from `symfony/http-client`.
 
 Symfony 7.2+ returns HTTP 422 (not 200) when a form re-renders with validation errors.
+
+## Testing Quality Standards
+- **No Magic Numbers/Strings:** NEVER hard-code the same value twice in a test. If a value is used to set up state (e.g., `$turnCount = 33`) and later used in an assertion, you MUST extract it to a local variable or class constant at the top of the test method.
+- **Strict Layer Separation:** 
+  - **Unit Tests:** Mock all external dependencies.
+  - **Integration/Controller Tests:** Verify state changes by querying the database (via Doctrine EntityManager) or by inspecting structured data (JSON responses).
+- **No Brittle UI Scraping:** NEVER use `$this->assertSelectorTextContains()` or test raw HTML body text unless explicitly asked to write an End-to-End browser test. Test the underlying data, not the Twig presentation.
+- **Assertion Quality:** Always prefer strict assertions (`assertSame` over `assertEquals`) and assert the specific expected type.
 
 ## Static Analysis
 
@@ -90,10 +108,11 @@ Config is in `phpstan.neon`. The Doctrine extension uses `tests/doctrine_object_
 
 ## Git Guidelines
 - **Commit Style:** Always use Conventional Commits (e.g., `feat:`, `fix:`, `refactor:`, `docs:`).
-- **Format:** Use imperative mood in the subject line (e.g., "add service" not "added service").
+- **Format:** Use imperative mood in the subject line (e.g., "add service" not "added service"). Write commit messages are that as conscise as possible.
 - **Scope:** Include a scope if applicable (e.g., `fix(controller): resolve null pointer`).
 - **Justify:** When making more complex changes, try to justify the reason why the changes were made or explain the logic why certain changes were made the way they were.
 - **Humanize:** Use simpler language, make messages friendly and warm. Add small, harmless jokes occasionally.
+- **Concise:** 
 
 ## Architecture
 
