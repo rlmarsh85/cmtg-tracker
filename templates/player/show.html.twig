@@ -9,7 +9,7 @@
             {{ player.username|first|upper }}
         </div>
         <div>
-            <h1 class="h3 mb-0">{{ player.username }}</h1>
+            <h1 class="h3 mb-0">{{ player.username }}{% if player.nickname %} <span class="text-muted fs-5 fw-normal">"{{ player.nickname }}"</span>{% endif %}</h1>
             <small class="text-muted">{{ player.email }}</small>
         </div>
     </div>
@@ -100,8 +100,6 @@
                             </div>
                             {% if gp.winner %}
                             <span style="color:#fbbf24"><i class="bi bi-trophy-fill"></i></span>
-                            {% elseif gp.placement %}
-                            <span class="text-muted">#{{ gp.placement }}</span>
                             {% endif %}
                         </div>
                     </li>

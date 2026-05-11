@@ -26,6 +26,10 @@ class Player
     #[Assert\Email]
     private string $email = '';
 
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
+    private ?string $nickname = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -51,6 +55,9 @@ class Player
 
     public function getEmail(): string { return $this->email; }
     public function setEmail(string $email): static { $this->email = $email; return $this; }
+
+    public function getNickname(): ?string { return $this->nickname; }
+    public function setNickname(?string $nickname): static { $this->nickname = $nickname; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 

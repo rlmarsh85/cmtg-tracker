@@ -43,7 +43,6 @@ class GameController extends AbstractController
 
                 $gp = new GamePlayer();
                 $gp->setPlayer($player);
-                $gp->setPlacement($data['placement'] ? (int) $data['placement'] : null);
                 $gp->setWinner(isset($data['winner']) && $data['winner'] === '1');
 
                 if (!empty($data['deck_id'])) {
@@ -100,7 +99,6 @@ class GameController extends AbstractController
 
                 $gp = new GamePlayer();
                 $gp->setPlayer($player);
-                $gp->setPlacement($data['placement'] ? (int) $data['placement'] : null);
                 $gp->setWinner(isset($data['winner']) && $data['winner'] === '1');
 
                 if (!empty($data['deck_id'])) {

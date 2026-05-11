@@ -66,7 +66,7 @@ class DeckControllerTest extends WebTestCase
         $player = $this->seedPlayer();
 
         $crawler = $client->request('GET', '/decks/new');
-        $form = $crawler->selectButton('Save')->form([
+        $form = $crawler->selectButton('Save Deck')->form([
             'deck[name]'   => 'My Elf Deck',
             'deck[format]' => 'Commander',
             'deck[player]' => (string) $player->getId(),
@@ -81,7 +81,7 @@ class DeckControllerTest extends WebTestCase
         $player = $this->seedPlayer();
 
         $crawler = $client->request('GET', '/decks/new');
-        $form = $crawler->selectButton('Save')->form([
+        $form = $crawler->selectButton('Save Deck')->form([
             'deck[name]'   => 'Persisted Deck',
             'deck[format]' => 'Modern',
             'deck[player]' => (string) $player->getId(),
@@ -98,7 +98,7 @@ class DeckControllerTest extends WebTestCase
     {
         $client = $this->bootWithSchema();
         $crawler = $client->request('GET', '/decks/new');
-        $form = $crawler->selectButton('Save')->form();
+        $form = $crawler->selectButton('Save Deck')->form();
         $formValues = $form->getPhpValues();
         $formValues['deck']['format'] = 'NotARealFormat';
         $client->request($form->getMethod(), $form->getUri(), $formValues);
@@ -138,7 +138,7 @@ class DeckControllerTest extends WebTestCase
         $id = $deck->getId();
 
         $crawler = $client->request('GET', '/decks/' . $id . '/edit');
-        $form = $crawler->selectButton('Save')->form([
+        $form = $crawler->selectButton('Save Deck')->form([
             'deck[name]'   => 'Updated Deck Name',
             'deck[format]' => 'Legacy',
             'deck[player]' => (string) $player->getId(),

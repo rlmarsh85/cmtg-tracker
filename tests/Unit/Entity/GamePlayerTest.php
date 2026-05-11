@@ -49,27 +49,6 @@ class GamePlayerTest extends TestCase
         $this->assertNull($this->gamePlayer->getDeck());
     }
 
-    public function testSetAndGetPlacementWithNull(): void
-    {
-        $this->gamePlayer->setPlacement(null);
-        $this->assertNull($this->gamePlayer->getPlacement());
-    }
-
-    public function testSetAndGetPlacementWithValue(): void
-    {
-        $this->gamePlayer->setPlacement(3);
-        $this->assertSame(3, $this->gamePlayer->getPlacement());
-    }
-
-    public function testSetAndGetPlacementWithBoundaryValues(): void
-    {
-        $this->gamePlayer->setPlacement(1);
-        $this->assertSame(1, $this->gamePlayer->getPlacement());
-
-        $this->gamePlayer->setPlacement(20);
-        $this->assertSame(20, $this->gamePlayer->getPlacement());
-    }
-
     public function testDefaultWinnerIsFalse(): void
     {
         $this->assertFalse($this->gamePlayer->isWinner());

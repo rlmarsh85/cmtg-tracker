@@ -28,6 +28,10 @@ class Game
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $notes = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
+    private ?int $turnCount = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -52,6 +56,9 @@ class Game
 
     public function getNotes(): ?string { return $this->notes; }
     public function setNotes(?string $notes): static { $this->notes = $notes; return $this; }
+
+    public function getTurnCount(): ?int { return $this->turnCount; }
+    public function setTurnCount(?int $turnCount): static { $this->turnCount = $turnCount; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 

@@ -20,9 +20,17 @@
     </div>
 </div>
 
-{% if game.notes %}
+{% if game.turnCount or game.notes %}
 <div class="card mb-4">
-    <div class="card-body"><small class="text-muted d-block mb-1">Notes</small>{{ game.notes }}</div>
+    <div class="card-body">
+        {% if game.turnCount %}
+        <small class="text-muted d-block mb-1">Turns</small>
+        <p class="mb-{{ game.notes ? 3 : 0 }}">{{ game.turnCount }}</p>
+        {% endif %}
+        {% if game.notes %}
+        <small class="text-muted d-block mb-1">Notes</small>{{ game.notes }}
+        {% endif %}
+    </div>
 </div>
 {% endif %}
 
@@ -34,7 +42,7 @@
     <div class="table-responsive">
         <table class="table table-hover mb-0">
             <thead>
-                <tr><th>Player</th><th>Deck</th><th>Placement</th><th>Result</th></tr>
+                <tr><th>Player</th><th>Deck</th><th>Result</th></tr>
             </thead>
             <tbody>
                 {% for gp in game.participants %}
@@ -66,7 +74,6 @@
                         <span class="text-muted">—</span>
                         {% endif %}
                     </td>
-                    <td>{{ gp.placement ?? '—' }}</td>
                     <td>
                         {% if gp.winner %}
                         <span style="color:#fbbf24"><i class="bi bi-trophy-fill me-1"></i>Winner</span>

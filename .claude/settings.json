@@ -1,16 +1,27 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "php -d xdebug.mode=off vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=256M --no-progress && php -d xdebug.mode=off vendor/bin/phpunit --stop-on-failure"
+          }
+        ]
+      }
+    ],    
     "PostToolUse": [
       {
         "matcher": "Edit:src/*.php",
         "hooks": [
           {
             "type": "command",
-            "command": "vendor/bin/phpstan analyse --memory-limit=256M --no-progress"
+            "command": "php -d xdebug.mode=off vendor/bin/phpstan analyse -c phpstan.neon --no-progress --memory-limit=256M --no-progress"
           },
           {
             "type": "command",
-            "command": "bin/phpunit --stop-on-failure"
+            "command": "php -d xdebug.mode=off bin/phpunit --stop-on-failure"
           }
         ]
       }

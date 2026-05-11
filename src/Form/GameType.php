@@ -7,6 +7,7 @@ use App\Entity\Game;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,6 +28,11 @@ class GameType extends AbstractType
                 'label' => 'Format',
                 'choices' => array_combine(Deck::FORMATS, Deck::FORMATS),
                 'attr' => ['class' => 'form-select'],
+            ])
+            ->add('turnCount', IntegerType::class, [
+                'label' => 'Number of Turns',
+                'required' => false,
+                'attr' => ['class' => 'form-control', 'min' => 1, 'placeholder' => 'Optional'],
             ])
             ->add('notes', TextareaType::class, [
                 'label' => 'Notes',

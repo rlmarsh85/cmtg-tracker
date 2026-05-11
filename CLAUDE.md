@@ -74,6 +74,27 @@ php vendor/bin/phpstan analyse --memory-limit=256M -v
 
 Config is in `phpstan.neon`. The Doctrine extension uses `tests/doctrine_object_manager.php` to load entity metadata; the Symfony extension reads the compiled dev container at `var/cache/dev/App_KernelDevDebugContainer.xml` — rebuild it with `php bin/console cache:warmup` if it goes stale.
 
+
+## Validation Policy (Strict)
+- **Zero-Bug Policy:** This project maintains a passing state for PHPUnit and PHPStan at all times.
+- **Hook Failures:** If any hook (SessionStart or PostToolUse) returns a non-zero exit code, you must treat this as a BLOCKING error.
+- **Ownership:** Fix all detected errors immediately, regardless of whether they were introduced by you or exist in the codebase from previous work. 
+
+## Autonomous Behavior
+- **Initial State:** Upon starting a session, if the SessionStart hooks indicate failures (PHPUnit or PHPStan), your first priority is to summarize these errors and ask to fix them, or fix them immediately if the user provides a broad instruction like "help me out" or "fix the build".
+- **Silent Failures:** Never ignore a non-zero exit code from a hook. If a hook fails, you must investigate the output and propose a fix before continuing with other tasks.
+
+## Development Notes
+- **PHPStan Noise:** You may see a notice stating "Using configuration file ...phpstan.neon". This is **informational only** and does not indicate a failure. 
+- **Validation Success:** As long as the command exit code is 0 and no specific error table is present, consider the check passed regardless of configuration notices.
+
+## Git Guidelines
+- **Commit Style:** Always use Conventional Commits (e.g., `feat:`, `fix:`, `refactor:`, `docs:`).
+- **Format:** Use imperative mood in the subject line (e.g., "add service" not "added service").
+- **Scope:** Include a scope if applicable (e.g., `fix(controller): resolve null pointer`).
+- **Justify:** When making more complex changes, try to justify the reason why the changes were made or explain the logic why certain changes were made the way they were.
+- **Humanize:** Use simpler language, make messages friendly and warm. Add small, harmless jokes occasionally.
+
 ## Architecture
 
 Symfony 7.4 application with SQLite (`var/data.db`). No authentication — all routes are public.

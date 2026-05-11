@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\GamePlayerRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GamePlayerRepository::class)]
 class GamePlayer
@@ -20,16 +19,11 @@ class GamePlayer
 
     #[ORM\ManyToOne(inversedBy: 'gamePlayers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
     private Player $player;
 
     #[ORM\ManyToOne(inversedBy: 'gamePlayers')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Deck $deck = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Assert\Range(min: 1, max: 20)]
-    private ?int $placement = null;
 
     #[ORM\Column]
     private bool $winner = false;
@@ -44,9 +38,6 @@ class GamePlayer
 
     public function getDeck(): ?Deck { return $this->deck; }
     public function setDeck(?Deck $deck): static { $this->deck = $deck; return $this; }
-
-    public function getPlacement(): ?int { return $this->placement; }
-    public function setPlacement(?int $placement): static { $this->placement = $placement; return $this; }
 
     public function isWinner(): bool { return $this->winner; }
     public function setWinner(bool $winner): static { $this->winner = $winner; return $this; }

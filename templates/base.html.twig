@@ -71,6 +71,11 @@
                         <i class="bi bi-collection me-1"></i>Decks
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ app.current_route starts with 'stats' ? 'active' }}" href="{{ path('stats_index') }}">
+                        <i class="bi bi-pie-chart me-1"></i>Stats
+                    </a>
+                </li>
                 <li class="nav-item ms-2">
                     <a class="btn btn-mtg btn-sm px-3" href="{{ path('game_new') }}">
                         <i class="bi bi-plus-lg me-1"></i>Record Game

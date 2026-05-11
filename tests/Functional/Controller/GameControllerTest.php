@@ -83,7 +83,7 @@ class GameControllerTest extends WebTestCase
         ]);
         $formValues = $form->getPhpValues();
         $formValues['participants'] = [
-            ['player_id' => (string) $player->getId(), 'winner' => '1', 'placement' => '1'],
+            ['player_id' => (string) $player->getId(), 'winner' => '1'],
         ];
         $client->request($form->getMethod(), $form->getUri(), $formValues);
 
@@ -107,7 +107,7 @@ class GameControllerTest extends WebTestCase
         ]);
         $formValues = $form->getPhpValues();
         $formValues['participants'] = [
-            ['player_id' => '99999', 'winner' => '0', 'placement' => ''],
+            ['player_id' => '99999', 'winner' => '0'],
         ];
         $client->request($form->getMethod(), $form->getUri(), $formValues);
 

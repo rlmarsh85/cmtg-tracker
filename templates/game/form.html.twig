@@ -22,10 +22,15 @@
                         {{ form_widget(form.playedAt) }}
                         {{ form_errors(form.playedAt) }}
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         {{ form_label(form.format) }}
                         {{ form_widget(form.format) }}
                         {{ form_errors(form.format) }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form_label(form.turnCount) }}
+                        {{ form_widget(form.turnCount) }}
+                        {{ form_errors(form.turnCount) }}
                     </div>
                     <div class="col-12">
                         {{ form_label(form.notes) }}
@@ -48,7 +53,7 @@
                         {% for i, gp in game.participants %}
                         <div class="participant-row">
                             <div class="row g-3 align-items-end">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Player</label>
                                     <select name="participants[{{ i }}][player_id]" class="form-select player-select" required>
                                         <option value="">Select player…</option>
@@ -57,7 +62,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Deck (optional)</label>
                                     <select name="participants[{{ i }}][deck_id]" class="form-select deck-select">
                                         <option value="">No deck</option>
@@ -67,11 +72,6 @@
                                         </option>
                                         {% endfor %}
                                     </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Place</label>
-                                    <input type="number" name="participants[{{ i }}][placement]" class="form-control"
-                                           min="1" max="20" placeholder="—" value="{{ gp.placement ?? '' }}">
                                 </div>
                                 <div class="col-md-1 text-center">
                                     <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
@@ -90,7 +90,7 @@
                         <!-- Start with 2 empty rows -->
                         <div class="participant-row" data-index="0">
                             <div class="row g-3 align-items-end">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Player</label>
                                     <select name="participants[0][player_id]" class="form-select player-select">
                                         <option value="">Select player…</option>
@@ -99,7 +99,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Deck (optional)</label>
                                     <select name="participants[0][deck_id]" class="form-select deck-select">
                                         <option value="">No deck</option>
@@ -107,10 +107,6 @@
                                         <option value="{{ deck.id }}">{{ deck.player.username }} — {{ deck.name }}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Place</label>
-                                    <input type="number" name="participants[0][placement]" class="form-control" min="1" max="20" placeholder="—">
                                 </div>
                                 <div class="col-md-1 text-center">
                                     <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
@@ -123,7 +119,7 @@
                         </div>
                         <div class="participant-row" data-index="1">
                             <div class="row g-3 align-items-end">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Player</label>
                                     <select name="participants[1][player_id]" class="form-select player-select">
                                         <option value="">Select player…</option>
@@ -132,7 +128,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label class="form-label">Deck (optional)</label>
                                     <select name="participants[1][deck_id]" class="form-select deck-select">
                                         <option value="">No deck</option>
@@ -140,10 +136,6 @@
                                         <option value="{{ deck.id }}">{{ deck.player.username }} — {{ deck.name }}</option>
                                         {% endfor %}
                                     </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Place</label>
-                                    <input type="number" name="participants[1][placement]" class="form-control" min="1" max="20" placeholder="—">
                                 </div>
                                 <div class="col-md-1 text-center">
                                     <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>
@@ -159,7 +151,7 @@
 
                 <p class="text-muted small mt-2 mb-0">
                     <i class="bi bi-info-circle me-1"></i>
-                    Check the <i class="bi bi-trophy-fill" style="color:#fbbf24"></i> for the winner. Place is optional (1 = 1st).
+                    Check the <i class="bi bi-trophy-fill" style="color:#fbbf24"></i> for the winner.
                 </p>
             </div>
         </div>
@@ -196,17 +188,13 @@ document.getElementById('addParticipant').addEventListener('click', () => {
 
     div.innerHTML = `
         <div class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <label class="form-label">Player</label>
                 <select name="participants[${i}][player_id]" class="form-select">${playerOptions}</select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <label class="form-label">Deck (optional)</label>
                 <select name="participants[${i}][deck_id]" class="form-select">${deckOptions}</select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">Place</label>
-                <input type="number" name="participants[${i}][placement]" class="form-control" min="1" max="20" placeholder="—">
             </div>
             <div class="col-md-1 text-center">
                 <label class="form-label d-block"><i class="bi bi-trophy-fill" style="color:#fbbf24" title="Winner"></i></label>

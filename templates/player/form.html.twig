@@ -18,10 +18,15 @@
                     {{ form_widget(form.username) }}
                     {{ form_errors(form.username) }}
                 </div>
-                <div class="mb-4">
+                <div class="mb-3">
                     {{ form_label(form.email) }}
                     {{ form_widget(form.email) }}
                     {{ form_errors(form.email) }}
+                </div>
+                <div class="mb-4">
+                    {{ form_label(form.nickname) }}
+                    {{ form_widget(form.nickname) }}
+                    {{ form_errors(form.nickname) }}
                 </div>
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-mtg flex-fill">
